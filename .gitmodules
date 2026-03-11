@@ -16,3 +16,6 @@
 [submodule "services/architect-graph-service"]
 	path = services/architect-graph-service
 	url = https://github.com/tech-beeline/beeatlas-architect-graph-service.git
+[submodule "services/structurizr_backend"]
+	path = services/structurizr_backend
+	url = https://github.com/tech-beeline/beeatlas-structurizr-backend.git

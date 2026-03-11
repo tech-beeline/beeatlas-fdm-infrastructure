@@ -361,6 +361,20 @@ services:
       - fdm-network
     restart: unless-stopped
 
+  structurizr_backend:
+    tty: true
+    container_name: structurizr_backend
+    build:
+      context: ./services/structurizr_backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./services/structurizr_backend:/opt/structurizr_backend
+    ports:
+      - "8086:8080"
+    env_file: ".env"
+    networks:
+      - fdm-network
+
 networks:
   fdm-network:
     driver: bridge
