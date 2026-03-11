@@ -217,7 +217,7 @@ services:
 
   capability-backend:
     build:
-      context: .services/capability-service
+      context: ./services/capability-service
       dockerfile: Dockerfile
     container_name: capability-backend
     depends_on:
@@ -258,7 +258,7 @@ services:
 
   architect-graph-service:
     build:
-      context: .services/architect-graph-service
+      context: ./services/architect-graph-service
       dockerfile: Dockerfile
     container_name: architect-graph-service
     depends_on:
@@ -293,7 +293,7 @@ services:
 
   products-service:
     build:
-      context: .services/products-service
+      context: ./services/products-service
       dockerfile: Dockerfile
     container_name: products-service
     depends_on:
@@ -335,7 +335,7 @@ services:
 
   techradar-backend:
     build:
-      context: .services/techradar-service
+      context: ./services/techradar-service
       dockerfile: Dockerfile
     container_name: techradar-backend
     environment:
