@@ -1,0 +1,18 @@
+[submodule "services/gateway"]
+	path = services/gateway
+	url = https://github.com/tech-beeline/beeatlas-fdm-gateway-service.git
+[submodule "services/fdm-auth-service"]
+	path = services/fdm-auth-service
+	url = https://github.com/tech-beeline/beeatlas-fdm-auth-service.git
+[submodule "services/products-service"]
+	path = services/products-service
+	url = https://github.com/tech-beeline/beeatlas-fdm-products-service.git
+[submodule "services/capability-service"]
+	path = services/capability-service
+	url = https://github.com/tech-beeline/beeatlas-capability-backend-service.git
+[submodule "services/techradar-service"]
+	path = services/techradar-service
+	url = https://github.com/tech-beeline/beeatlas-fdm-techradar-service.git
+[submodule "services/architect-graph-service"]
+	path = services/architect-graph-service
+	url = https://github.com/tech-beeline/beeatlas-architect-graph-service.git
