@@ -371,7 +371,7 @@ services:
       - ./services/structurizr_backend:/opt/structurizr_backend
     ports:
       - "8086:8080"
-    env_file: ".env"
+    env_file: "./services/structurizr_backend/.env"
     networks:
       - fdm-network
 

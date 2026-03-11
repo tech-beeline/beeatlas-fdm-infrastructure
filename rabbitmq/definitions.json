@@ -1,0 +1,38 @@
+{
+  "users": [
+    {
+      "name": "guest",
+      "password": "guest",
+      "tags": "administrator"
+    }
+  ],
+  "vhosts": [
+    { "name": "/" }
+  ],
+  "permissions": [
+    {
+      "user": "guest",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "queues": [
+    { "name": "tech_capability_queue", "vhost": "/", "durable": true },
+    { "name": "business_capability_queue", "vhost": "/", "durable": true },
+    { "name": "package_queue", "vhost": "/", "durable": true },
+    { "name": "tc_description_quality", "vhost": "/", "durable": true },
+    { "name": "bc_entry_in_sparx", "vhost": "/", "durable": true },
+    { "name": "product_availability", "vhost": "/", "durable": true },
+    { "name": "error_bc_entry_in_sparx", "vhost": "/", "durable": true },
+
+    { "name": "comparison_operations", "vhost": "/", "durable": true },
+    { "name": "comparison_arch_operations", "vhost": "/", "durable": true },
+    { "name": "delete_arch_container_relations", "vhost": "/", "durable": true },
+    { "name": "delete_arch_interface_relations", "vhost": "/", "durable": true },
+    { "name": "delete_arch_operation_relations", "vhost": "/", "durable": true },
+    { "name": "update-product-owner-and-priority-by-cmdb", "vhost": "/", "durable": true },
+    { "name": "delete_tc_to_operation", "vhost": "/", "durable": true }
+  ]
+}
