@@ -159,7 +159,7 @@ services:
       INTEGRATION_AUTHENTIC_AUTH_URL: http://authentik-server:9000/application/o/test/
       INTEGRATION_TECHRADAR_SERVER_URL: http://techradar-backend:8080
       INTEGRATION_CAPABILITY_SERVER_URL: http://capability-backend:8080
-      INTEGRATION_PRODUCTS_SERVER_URL: http://fdm-products:8080
+      INTEGRATION_PRODUCTS_SERVER_URL: http://products-service:8080
       INTEGRATION_GRAPH_SERVER_URL: http://architect-graph-service:8080
       INTEGRATION_CX_SERVER_URL: "http://cxserverurl"
       INTEGRATION_PACK_LOADER_SERVER_URL: "http://packloaderserver"
@@ -192,7 +192,7 @@ services:
       SPRING_FLYWAY_DEFAULT_SCHEMA: user_auth
       SPRING_FLYWAY_BASELINE_ON_MIGRATE: "true"
       SPRING_FLYWAY_CLEAN_DISABLED: "true"
-      INTEGRATION_PRODUCTS_SERVER_URL: http://fdm-products:8080
+      INTEGRATION_PRODUCTS_SERVER_URL: http://products-service:8080
       GWURL: http://gateway:8080
       AUTHBASIC: "Basic xxxxxxxx" # заменить на реальные креды
       TECHUSER: "tech-user" # заменить на логин техпользователя
@@ -235,7 +235,7 @@ services:
       SPRING_FLYWAY_CLEAN_DISABLED: "true"
       INTEGRATION_NOTIFICATION_SERVER_URL: "http://notification-service" # добавить адрес
       INTEGRATION_DOCUMENT_SERVER_URL: "http://document-service"
-      INTEGRATION_PRODUCT_SERVER_URL: http://fdm-products:8080
+      INTEGRATION_PRODUCT_SERVER_URL: http://products-service/:8080
       INTEGRATION_BPM_SERVER_URL: "http://bpm-service"
       INTEGRATION_PACK_LOADER_SERVER_URL: "http://pack-loader-service"
       INTEGRATION_DASHBOARD_SERVER_URL: "http://dashboard-service"
@@ -277,7 +277,7 @@ services:
       SPRING_REDIS_PORT: "6379"
       SPRING_REDIS_PASSWORD: "redis-password"
       INTEGRATION_AUTHSSO_SERVER_URL: "ambassador-auth-sso"
-      INTEGRATION_PRODUCT_SERVER_URL: http://fdm-products:8080
+      INTEGRATION_PRODUCT_SERVER_URL: http://products-service:8080
       OTEL_EXPORTER_OTLP_ENDPOINT: "opentelemetry"
     ports:
       - "8083:8080"
@@ -343,7 +343,7 @@ services:
       SPRING_FLYWAY_CLEAN_DISABLED: "true"
       INTEGRATION_NOTIFICATION_SERVER_URL: "http://notification-service"
       INTEGRATION_DOCUMENT_SERVER_URL: "https://document-service"
-      INTEGRATION_PRODUCTS_SERVER_URL: http://fdm-products:8080
+      INTEGRATION_PRODUCTS_SERVER_URL: http://products-service:8080
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
       interval: 5s
