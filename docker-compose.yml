@@ -180,6 +180,7 @@ services:
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://opentelemetry"
       INTEGRATION_OBS_DASHBOARD_SERVER_URL: "http://obsdashboardurl"
       INTEGRATION_SEQUENCE_BACKEND_SERVER_URL: "http://sequencebackendurl"
+      DEMO_AUTH: true
     networks:
       - fdm-network
 
