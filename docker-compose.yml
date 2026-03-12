@@ -139,6 +139,12 @@ services:
       - neo4j_plugins:/plugins
     networks:
       - fdm-network
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:7474" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
 
   gateway:
     build:
@@ -203,6 +209,9 @@ services:
       interval: 5s
       timeout: 3s
       retries: 15
+    depends_on:
+      postgres:
+        condition: service_healthy
     ports:
       - "${FDM_AUTH_SERVICE_PORT:-8081}:8080"
     networks:
@@ -215,6 +224,8 @@ services:
       dockerfile: Dockerfile
     container_name: capability-backend
     depends_on:
+      postgres:
+        condition: service_healthy
       rabbitmq:
         condition: service_healthy
     environment:
@@ -256,6 +267,8 @@ services:
       dockerfile: Dockerfile
     container_name: architect-graph-service
     depends_on:
+      postgres:
+        condition: service_healthy
       neo4j:
         condition: service_healthy
       rabbitmq:
@@ -320,7 +333,7 @@ services:
       interval: 15s
       timeout: 3s
       retries: 15
-      start_period: 60s
+      start_period: 180s
     ports:
       - "8084:8080"
     networks:
@@ -349,6 +362,10 @@ services:
       interval: 5s
       timeout: 3s
       retries: 15
+      start_period: 180s
+    depends_on:
+      postgres:
+        condition: service_healthy
     ports:
       - "8085:8080"
     networks:
