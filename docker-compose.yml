@@ -29,22 +29,16 @@ services:
       - "15672:15672"
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
-      - ./rabbitmq/init.sh:/usr/local/bin/init.sh
+      - ./rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
+      - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
     networks:
       - fdm-network
+
     healthcheck:
       test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s
-    command: >
-      sh -c "
-            rabbitmq-server &
-            sleep 25 &&
-            /usr/local/bin/init.sh &&
-        wait
-      "
 
   redis:
     image: redis:7-alpine
