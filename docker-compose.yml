@@ -335,8 +335,8 @@ services:
       INTEGRATION_DASHBOARD_SCENARIOS_SERVER_URL: "http://dashboard-service"
       INTEGRATION_AUTH_SERVER_URL: http://fdm-auth-backend:8080
       INTEGRATION_AUTHSSO_SERVER_URL: "http://auth-service"
-      INTEGRATION_TECHRADAR_SERVER_URL: "http://techradar-service"
-      INTEGRATION_GRAPH_SERVER_URL: "http://graph-service"
+      INTEGRATION_TECHRADAR_SERVER_URL: http://techradar-service:8080
+      INTEGRATION_GRAPH_SERVER_URL: http://architect-graph-service:8080
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
       interval: 15s
