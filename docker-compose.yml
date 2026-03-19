@@ -384,6 +384,14 @@ services:
   structurizr-backend:
     tty: true
     container_name: structurizr-backend
+    environment:
+      INTEGRATION_DOCUMENT_SERVER_URL: "https://document-service"
+      INTEGRATION_PRODUCTS_SERVER_URL: http://products-service:8080
+      INTEGRATION_TECHRADAR_SERVER_URL: http://techradar-service:8080
+      URL_ONPREMISES_WORKSPACE: http://on-premises:8080/api/workspace
+      URL_ONPREMISES_BASE: http://on-premises:8080/api
+      ONPREMISES_PASSWORD: password
+      URL_VEGA: https://vega.vimpelcom.ru
     build:
       context: ./services/structurizr_backend
       dockerfile: Dockerfile
