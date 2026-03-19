@@ -402,7 +402,7 @@ services:
     env_file: "./services/structurizr_backend/.env"
     networks:
       - fdm-network
-     depends_on:
+    depends_on:
       - on-premises
 
   on-premises:
