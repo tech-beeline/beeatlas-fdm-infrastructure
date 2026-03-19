@@ -394,6 +394,33 @@ services:
     env_file: "./services/structurizr_backend/.env"
     networks:
       - fdm-network
+     depends_on:
+      - on-premises
+
+  on-premises:
+    image: structurizr/onpremises:2025.05.28
+    container_name: on-premises
+    ports:
+      - "8087:8080"
+    volumes:
+      - /data/on-premises/structurizr:/usr/local/structurizr
+    networks:
+      - fdm-network
+    command: >
+      sh -c "
+        if [ ! -f /usr/local/structurizr/structurizr.properties ]; then
+          echo 'Creating structurizr.properties with API key...'
+          echo 'structurizr.apiKey=$$2a$$10$$qlXOc8yhsUvt04Jf0PkctuWVYlLOy6iL8c9W72IXVwoYSASPcGEtq' > /usr/local/structurizr/structurizr.properties
+          echo 'Created'
+        fi
+        echo 'Starting Structurizr...'
+        exec catalina.sh run
+      "
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 networks:
   fdm-network:
