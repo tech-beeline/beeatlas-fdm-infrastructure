@@ -1,3 +1,0 @@
-ALTER TABLE bi_steps
-ALTER
-COLUMN name TYPE TEXT;

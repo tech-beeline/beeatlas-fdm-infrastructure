@@ -1,3 +1,0 @@
-# cx-backend
-
-## Getting started

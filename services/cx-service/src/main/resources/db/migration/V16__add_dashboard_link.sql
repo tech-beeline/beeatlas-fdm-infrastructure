@@ -1,1 +1,0 @@
-ALTER TABLE cx.cj ADD COLUMN dashboard_link TEXT;

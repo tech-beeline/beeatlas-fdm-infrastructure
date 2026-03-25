@@ -1,5 +1,0 @@
-ALTER TABLE cj_steps
-ALTER COLUMN name TYPE TEXT;
-
-ALTER TABLE cj_steps
-ALTER COLUMN description TYPE TEXT;

@@ -1,1 +1,0 @@
-ALTER TABLE cx.cj ADD bpmn boolean NULL;

@@ -19,12 +19,12 @@
 [submodule "services/structurizr_backend"]
 	path = services/structurizr_backend
 	url = https://github.com/tech-beeline/beeatlas-structurizr-backend.git
-[submodule "cx-service"]
-	path = cx-service
-	url = https://github.com/tech-beeline/beeatlas-fdm-cx-service.git
 [submodule "services/notifications-service"]
 	path = services/notifications-service
 	url = https://github.com/tech-beeline/beeatlas-notifications-management.git
 [submodule "services/document-service"]
 	path = services/document-service
 	url = https://github.com/tech-beeline/beeatlas-document-service.git
+[submodule "services/cx-service"]
+	path = services/cx-service
+	url = https://github.com/tech-beeline/beeatlas-fdm-cx-service.git
