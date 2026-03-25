@@ -15,7 +15,7 @@ services:
     networks:
       - fdm-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -89,6 +89,7 @@ services:
       - "5000:9000"
       - "5443:9443"
     volumes:
+      # - ./authentik-backups/blueprints:/blueprints/custom:ro
       - authentik-media:/media
       - authentik-templates:/templates
     depends_on:
@@ -102,12 +103,13 @@ services:
       - ${AUTHENTIC_AUTH:-false}
 
   authentik-worker:
-    image: ghcr.io/goauthentik/server:2025.10.2
+    image: ghcr.io/goauthentik/server:2026.2
     container_name: authentik-worker
     command: worker
     restart: unless-stopped
     user: root
     environment:
+      AUTHENTIK_BOOTSTRAP_PASSWORD: "password"
       AUTHENTIK_POSTGRESQL__HOST: authentik-postgres
       AUTHENTIK_POSTGRESQL__PORT: 5432
       AUTHENTIK_POSTGRESQL__NAME: authentik_db
@@ -116,10 +118,13 @@ services:
       AUTHENTIK_REDIS__HOST: redis
       AUTHENTIK_SECRET_KEY: my-strong-secret-key
     volumes:
+      # - ./authentik-backups/blueprints:/blueprints/custom:ro
       - authentik-media:/media
       - authentik-templates:/templates
       - authentik-certs:/certs
     depends_on:
+      authentik-server:
+        condition: service_healthy
       authentik-postgres:
         condition: service_healthy
       redis:
@@ -154,6 +159,41 @@ services:
       retries: 5
       start_period: 120s
 
+  document-service-minio:
+    image: minio/minio:latest
+    container_name: document-service-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${DOCUMENT_MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${DOCUMENT_MINIO_ROOT_PASSWORD:-minioadmin}
+    ports:
+      - "${DOCUMENT_MINIO_API_PORT:-9000}:9000"
+      - "${DOCUMENT_MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - document-service-minio:/data
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fdm-network
+
+  document-service-minio-init:
+    image: minio/mc:latest
+    container_name: document-service-minio-init
+    depends_on:
+      document-service-minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://document-service-minio:9000 ${DOCUMENT_MINIO_ROOT_USER:-minioadmin} ${DOCUMENT_MINIO_ROOT_PASSWORD:-minioadmin} &&
+      mc mb --ignore-existing local/${DOCUMENT_MINIO_BUCKET_NAME:-document-service-documents}
+      "
+    restart: "no"
+    networks:
+      - fdm-network
+
   gateway:
     build:
       context: ./services/gateway
@@ -164,54 +204,44 @@ services:
       - "8080:8080"
       - "8090:8090"
       - "10260:10260"
+    env_file:
+      - ./common.env
     environment:
       JWKS: "jwks"
       SPRING_PROFILES_ACTIVE: local
-      AUTHENTIK_HOST: http://authentik-server:9000
-      AUTHENTIK_SECRET_KEY: my-strong-secret-key
-      INTEGRATION_AUTH_SERVER_URL: http://fdm-auth-backend:8080
-      INTEGRATION_AUTHENTIC_AUTH_URL: http://authentik-server:9000/application/o/test/
-      INTEGRATION_TECHRADAR_SERVER_URL: http://techradar-backend:8080
-      INTEGRATION_CAPABILITY_SERVER_URL: http://capability-backend:8080
-      INTEGRATION_PRODUCTS_SERVER_URL: http://products-service:8080
-      INTEGRATION_GRAPH_SERVER_URL: http://architect-graph-service:8080
-      INTEGRATION_CX_SERVER_URL: "http://cxserverurl"
-      INTEGRATION_PACK_LOADER_SERVER_URL: "http://packloaderserver"
-      INTEGRATION_DASHBOARD_SERVER_URL: "http://dashboardserver"
-      INTEGRATION_NOTIFICATION_SERVER_URL: "http://notificationserver"
-      INTEGRATION_DOCUMENT_SERVER_URL: "http://documentserverurl"
-      INTEGRATION_CAMUNDA_SERVER_URL: "http://camundaserverurl"
-      INTEGRATION_ARCH_SERVER_URL: http://structurizr-backend:8080
-      INTEGRATION_GRAPH_VALIDATOR_SERVER_URL: "http://graphvalidatorserverurl"
-      INTEGRATION_ARCHITECTURE_SERVER_URL: "http://architectureserverurl"
-      INTEGRATION_AMBASSADOR_SERVER_URL: "http://stagemapicserverurl"
-      OTEL_EXPORTER_OTLP_ENDPOINT: "http://opentelemetry"
-      INTEGRATION_OBS_DASHBOARD_SERVER_URL: "http://obsdashboardurl"
-      INTEGRATION_SEQUENCE_BACKEND_SERVER_URL: "http://sequencebackendurl"
+      CORS_ENABLED: true
       DEMO_AUTH: true
+      AUTHENTIC_AUTH: true
     networks:
       - fdm-network
 
+  beeatlas-frontend:
+    image: ddzuba/frieren_frontend:x86
+    container_name: beeatlas-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./common.env
+    networks:
+      - fdm-network
 
   fdm-auth-backend:
     build:
       context: ./services/fdm-auth-service
       dockerfile: Dockerfile
     container_name: fdm-auth-backend
+    env_file:
+      - ./common.env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/fdm_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
       SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: user_auth
       SPRING_FLYWAY_DEFAULT_SCHEMA: user_auth
       SPRING_FLYWAY_BASELINE_ON_MIGRATE: "true"
       SPRING_FLYWAY_CLEAN_DISABLED: "true"
-      INTEGRATION_PRODUCTS_SERVER_URL: http://products-service:8080
-      GWURL: http://gateway:8080
-      AUTHBASIC: "Basic xxxxxxxx" # заменить на реальные креды
-      TECHUSER: "tech-user" # заменить на логин техпользователя
-      TECHPASSWORD: "tech-password" # заменить на пароль техпользователя
+      AUTHBASIC: "Basic xxxxxxxx"
+      TECHUSER: "tech-user"
+      TECHPASSWORD: "tech-password"
       OTEL_EXPORTER_OTLP_ENDPOINT:  # заменить на URL OTEL
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
@@ -237,31 +267,16 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+    env_file:
+      - ./common.env
     environment:
-      SPRING_RABBITMQ_VIRTUAL_HOST: /
       SPRING_RABBITMQ_TEMPLATE_EXCHANGE: capability.exchange
       SPRING_RABBITMQ_TEMPLATE_ROUTING_KEY: capability.routing
-      SPRING_RABBITMQ_HOST: fdm-rabbitmq
-      SPRING_RABBITMQ_PORT: 5672
-      SPRING_RABBITMQ_USERNAME: guest
-      SPRING_RABBITMQ_PASSWORD: guest
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/fdm_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
       SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: capability
       SPRING_FLYWAY_DEFAULT_SCHEMA: capability
       SPRING_FLYWAY_BASELINE_ON_MIGRATE: "true"
       SPRING_FLYWAY_CLEAN_DISABLED: "true"
-      INTEGRATION_NOTIFICATION_SERVER_URL: "http://notification-service" # добавить адрес
-      INTEGRATION_DOCUMENT_SERVER_URL: "http://document-service"
-      INTEGRATION_PRODUCT_SERVER_URL: http://products-service/:8080
-      INTEGRATION_BPM_SERVER_URL: "http://bpm-service"
-      INTEGRATION_PACK_LOADER_SERVER_URL: "http://pack-loader-service"
-      INTEGRATION_DASHBOARD_SERVER_URL: "http://dashboard-service"
-      INTEGRATION_AUTH_SERVER_URL: http://fdm-auth-backend:8080
-      INTEGRATION_AI_TOOL_SERVER_URL: "http://ai-tool-service"
-      INTEGRATION_AUTHSSO_SERVER_URL: "http://auth-service"
       timeout: 3s
       retries: 15
     ports:
@@ -282,25 +297,13 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+    env_file:
+      - ./common.env
     environment:
-      SPRING_NEO4J_URI: bolt://neo4j:7687
-      SPRING_NEO4J_AUTHENTICATION_USERNAME: neo4j
-      SPRING_NEO4J_AUTHENTICATION_PASSWORD: password
       JAVA_OPTS: -Xmx512m -Xms256m
-      SPRING_SERVICES_DOCUMENTS_URL: "http://document-service"
-      SPRING_RABBITMQ_VIRTUAL_HOST: /
       SPRING_RABBITMQ_TEMPLATE_EXCHANGE: ${RABBITMQ_EXCHANGE:-capability.exchange}
       SPRING_RABBITMQ_TEMPLATE_ROUTING_KEY: ${RABBITMQ_ROUTING_KEY:-capability.routing}
-      SPRING_RABBITMQ_HOST: fdm-rabbitmq
-      SPRING_RABBITMQ_PORT: 5672
-      SPRING_RABBITMQ_USERNAME: guest
-      SPRING_RABBITMQ_PASSWORD: guest
-      SPRING_REDIS_HOST: "redis"
-      SPRING_REDIS_PORT: "6379"
-      SPRING_REDIS_PASSWORD: "redis-password"
-      INTEGRATION_AUTHSSO_SERVER_URL: "ambassador-auth-sso"
       INTEGRATION_PRODUCT_SERVER_URL: http://products-service:8080
-      OTEL_EXPORTER_OTLP_ENDPOINT: "opentelemetry"
     ports:
       - "8083:8080"
     networks:
@@ -315,28 +318,16 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+    env_file:
+      - ./common.env
     environment:
-      SPRING_RABBITMQ_VIRTUAL_HOST: /
       SPRING_RABBITMQ_TEMPLATE_EXCHANGE: capability.exchange
       SPRING_RABBITMQ_TEMPLATE_ROUTING_KEY: capability.routing
-      SPRING_RABBITMQ_HOST: fdm-rabbitmq
-      SPRING_RABBITMQ_PORT: 5672
-      SPRING_RABBITMQ_USERNAME: guest
-      SPRING_RABBITMQ_PASSWORD: guest
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/fdm_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
       SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: product
       SPRING_FLYWAY_DEFAULT_SCHEMA: product
       SPRING_FLYWAY_BASELINE_ON_MIGRATE: "true"
       SPRING_FLYWAY_CLEAN_DISABLED: "true"
-      INTEGRATION_CAPABILITY_SERVER_URL: "http://capability-service"
-      INTEGRATION_DASHBOARD_SCENARIOS_SERVER_URL: "http://dashboard-service"
-      INTEGRATION_AUTH_SERVER_URL: http://fdm-auth-backend:8080
-      INTEGRATION_AUTHSSO_SERVER_URL: "http://auth-service"
-      INTEGRATION_TECHRADAR_SERVER_URL: http://techradar-service:8080
-      INTEGRATION_GRAPH_SERVER_URL: http://architect-graph-service:8080
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
       interval: 15s
@@ -354,18 +345,14 @@ services:
       context: ./services/techradar-service
       dockerfile: Dockerfile
     container_name: techradar-backend
+    env_file:
+      - ./common.env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/fdm_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
       SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: techradar
       SPRING_FLYWAY_DEFAULT_SCHEMA: techradar
       SPRING_FLYWAY_BASELINE_ON_MIGRATE: "true"
       SPRING_FLYWAY_CLEAN_DISABLED: "true"
-      INTEGRATION_NOTIFICATION_SERVER_URL: "http://notification-service"
-      INTEGRATION_DOCUMENT_SERVER_URL: "https://document-service"
-      INTEGRATION_PRODUCTS_SERVER_URL: http://products-service:8080
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
       interval: 5s
@@ -387,7 +374,7 @@ services:
     environment:
       INTEGRATION_DOCUMENT_SERVER_URL: "https://document-service"
       INTEGRATION_PRODUCTS_SERVER_URL: http://products-service:8080
-      INTEGRATION_TECHRADAR_SERVER_URL: http://techradar-service:8080
+      INTEGRATION_TECHRADAR_SERVER_URL: http://techradar-backend:8080
       URL_ONPREMISES_WORKSPACE: http://on-premises:8080/api/workspace
       URL_ONPREMISES_BASE: http://on-premises:8080/api
       ONPREMISES_PASSWORD: password
@@ -430,6 +417,96 @@ services:
       timeout: 10s
       retries: 5
 
+  cx-service:
+    build:
+      context: ./services/cx-service
+      dockerfile: Dockerfile
+    container_name: cx-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./common.env
+    environment:
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: cx
+      SPRING_FLYWAY_DEFAULT_SCHEMA: cx
+      SPRING_FLYWAY_BASELINE_ON_MIGRATE: "true"
+      SPRING_FLYWAY_CLEAN_DISABLED: "true"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    ports:
+      - "${CX_SERVICE_PORT:-8088}:8080"
+    networks:
+      - fdm-network
+    restart: unless-stopped
+
+  notifications-service:
+    build:
+      context: ./services/notifications-service
+      dockerfile: Dockerfile
+    container_name: notifications-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+      - ./common.env
+    environment:
+      SPRING_RABBITMQ_VIRTUAL_HOST: ${RABBITMQ_VHOST:-/}
+      SPRING_RABBITMQ_TEMPLATE_EXCHANGE: ${RABBITMQ_EXCHANGE:-capability.exchange}
+      SPRING_RABBITMQ_TEMPLATE_ROUTING_KEY: ${RABBITMQ_ROUTING_KEY:-capability.routing}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: notification
+      SPRING_FLYWAY_DEFAULT_SCHEMA: notification
+      SPRING_FLYWAY_BASELINE_ON_MIGRATE: "true"
+      SPRING_FLYWAY_CLEAN_DISABLED: "true"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    ports:
+      - "${NOTIFICATIONS_SERVICE_PORT:-8089}:8080"
+    networks:
+      - fdm-network
+    restart: unless-stopped
+    
+  document-service:
+    build:
+      context: ./services/document-service
+      dockerfile: Dockerfile
+    container_name: document-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      document-service-minio:
+        condition: service_healthy
+      document-service-minio-init:
+        condition: service_completed_successfully
+    env_file:
+      - ./common.env
+    environment:
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: documents
+      SPRING_FLYWAY_DEFAULT_SCHEMA: documents
+      SPRING_FLYWAY_BASELINE_ON_MIGRATE: "true"
+      SPRING_FLYWAY_CLEAN_DISABLED: "true"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    ports:
+      - "${DOCUMENT_SERVICE_PORT:-8091}:8080"
+    networks:
+      - fdm-network
+    restart: unless-stopped
+
 networks:
   fdm-network:
     driver: bridge
@@ -437,6 +514,7 @@ networks:
 volumes:
   postgres-data:
   rabbitmq-data:
+  document-service-minio:
   authentik-media:
   authentik-templates:
   authentik-certs:

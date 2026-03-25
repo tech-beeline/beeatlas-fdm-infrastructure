@@ -33,6 +33,11 @@
     { "name": "delete_arch_interface_relations", "vhost": "/", "durable": true },
     { "name": "delete_arch_operation_relations", "vhost": "/", "durable": true },
     { "name": "update-product-owner-and-priority-by-cmdb", "vhost": "/", "durable": true },
+    { "name": "tech_queue", "vhost": "/", "durable": true },
+    { "name": "notification", "vhost": "/", "durable": true },
+    { "name": "change_tech_capability", "vhost": "/", "durable": true },
+    { "name": "change_business_capability", "vhost": "/", "durable": true },
+    { "name": "tech_capability", "vhost": "/", "durable": true },
     { "name": "delete_tc_to_operation", "vhost": "/", "durable": true }
   ]
 }
