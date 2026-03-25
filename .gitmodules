@@ -25,3 +25,6 @@
 [submodule "services/notifications-service"]
 	path = services/notifications-service
 	url = https://github.com/tech-beeline/beeatlas-notifications-management.git
+[submodule "services/document-service"]
+	path = services/document-service
+	url = https://github.com/tech-beeline/beeatlas-document-service.git
