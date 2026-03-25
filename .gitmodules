@@ -22,3 +22,6 @@
 [submodule "cx-service"]
 	path = cx-service
 	url = https://github.com/tech-beeline/beeatlas-fdm-cx-service.git
+[submodule "services/notifications-service"]
+	path = services/notifications-service
+	url = https://github.com/tech-beeline/beeatlas-notifications-management.git
