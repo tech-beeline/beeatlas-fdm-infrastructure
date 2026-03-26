@@ -89,7 +89,7 @@ services:
       - "5000:9000"
       - "5443:9443"
     volumes:
-      # - ./authentik-backups/blueprints:/blueprints/custom:ro
+      - ./authentik-blueprints:/blueprints/custom:ro
       - authentik-media:/media
       - authentik-templates:/templates
     depends_on:
@@ -103,13 +103,14 @@ services:
       - ${AUTHENTIC_AUTH:-false}
 
   authentik-worker:
-    image: ghcr.io/goauthentik/server:2026.2
+    image: ghcr.io/goauthentik/server:2025.10.2
     container_name: authentik-worker
     command: worker
     restart: unless-stopped
     user: root
     environment:
       AUTHENTIK_BOOTSTRAP_PASSWORD: "password"
+      AUTHENTIK_BOOTSTRAP_EMAIL: "admin@test.ru"
       AUTHENTIK_POSTGRESQL__HOST: authentik-postgres
       AUTHENTIK_POSTGRESQL__PORT: 5432
       AUTHENTIK_POSTGRESQL__NAME: authentik_db
@@ -118,7 +119,7 @@ services:
       AUTHENTIK_REDIS__HOST: redis
       AUTHENTIK_SECRET_KEY: my-strong-secret-key
     volumes:
-      # - ./authentik-backups/blueprints:/blueprints/custom:ro
+      - ./authentik-blueprints:/blueprints/custom:ro
       - authentik-media:/media
       - authentik-templates:/templates
       - authentik-certs:/certs
