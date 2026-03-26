@@ -53,7 +53,7 @@
 |   (Zuul/Edge)    |          |   (messaging)    |          |   (fdm_db)        |
 +-------------------+          +-------------------+          +-------------------+
           |                                 |
-          |   REST/GraphQL                  |
+          |   REST                          |
           v                                 v
 +-------------------+   +-------------------+   +-------------------+
 |  Capability       |   |  Products         |   |  TechRadar        |
@@ -66,6 +66,13 @@
 |  Architect‑Graph  |   |  Structurizr      |
 |  Service          |   |  Backend (FastAPI)|
 +-------------------+   +-------------------+
+          |
+          |   S3 API
+          v
+  +-------------------+
+  |      MinIO (S3)   |
+  | (document-service)|
+  +-------------------+
 ```
 
 * **Gateway** – единственная точка входа (`http://localhost:8080`).
