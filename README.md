@@ -154,7 +154,7 @@ $env:AUTHENTIC_AUTH="true"; docker compose --profile true up -d
 
 2) Откройте в адресной строке браузера:
 
-`http://localhost:5000/application/o/authorize/?response_type=code&client_id=SxbmzvcDJHqs415xgqo8hPQh6CtHvop5jFGF1Wb2&redirect_uri=http://localhost/&scope=openid+profile+email+default`
+`http://localhost:5000/application/o/authorize/?response_type=code&client_id=SxbmzvcDJHqs415xgqo8hPQh6CtHvop5jFGF1Wb2&redirect_uri=http://localhost:3000&scope=openid+profile+email+default`
 
 3) После редиректа найдите параметр `code=...` в URL (он **одноразовый**) и скопируйте его.
 
@@ -166,7 +166,7 @@ curl --location 'http://localhost:5000/application/o/token/' \
   --data-urlencode 'grant_type=authorization_code' \
   --data-urlencode 'client_id=SxbmzvcDJHqs415xgqo8hPQh6CtHvop5jFGF1Wb2' \
   --data-urlencode 'code=35622580958b49bdb3fc8851fd2a2ee1' \
-  --data-urlencode 'redirect_uri=http://localhost/' \
+  --data-urlencode 'redirect_uri=http://localhost:3000' \
   --data-urlencode 'scope=default'
 ```
 
