@@ -32,10 +32,6 @@ entries:
       redirect_uris:
         - matching_mode: strict
           url: http://localhost:3000
-        - matching_mode: strict
-          url: http://localhost/
-        - matching_mode: strict
-          url: http://localhost:8080/
       property_mappings:
         - !Find [ authentik_providers_oauth2.scopemapping, [ scope_name, openid ] ]
         - !Find [ authentik_providers_oauth2.scopemapping, [ scope_name, profile ] ]
