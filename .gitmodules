@@ -28,3 +28,9 @@
 [submodule "services/cx-service"]
 	path = services/cx-service
 	url = https://github.com/tech-beeline/beeatlas-fdm-cx-service.git
+[submodule "beeatlas-events-history"]
+	path = beeatlas-events-history
+	url = https://github.com/tech-beeline/beeatlas-events-history.git
+[submodule "beeatlas-fdm-pack-loader"]
+	path = beeatlas-fdm-pack-loader
+	url = https://github.com/tech-beeline/beeatlas-fdm-pack-loader.git
