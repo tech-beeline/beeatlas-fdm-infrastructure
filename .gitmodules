@@ -1,36 +1,52 @@
 [submodule "services/gateway"]
 	path = services/gateway
 	url = https://github.com/tech-beeline/beeatlas-fdm-gateway-service.git
+	branch = main
 [submodule "services/fdm-auth-service"]
 	path = services/fdm-auth-service
 	url = https://github.com/tech-beeline/beeatlas-fdm-auth-service.git
+	branch = main
 [submodule "services/products-service"]
 	path = services/products-service
 	url = https://github.com/tech-beeline/beeatlas-fdm-products-service.git
+	branch = main
 [submodule "services/capability-service"]
 	path = services/capability-service
 	url = https://github.com/tech-beeline/beeatlas-capability-backend-service.git
+	branch = main
 [submodule "services/techradar-service"]
 	path = services/techradar-service
 	url = https://github.com/tech-beeline/beeatlas-fdm-techradar-service.git
+	branch = main
 [submodule "services/architect-graph-service"]
 	path = services/architect-graph-service
 	url = https://github.com/tech-beeline/beeatlas-architect-graph-service.git
+	branch = main
 [submodule "services/structurizr_backend"]
 	path = services/structurizr_backend
 	url = https://github.com/tech-beeline/beeatlas-structurizr-backend.git
+	branch = main
 [submodule "services/notifications-service"]
 	path = services/notifications-service
 	url = https://github.com/tech-beeline/beeatlas-notifications-management.git
+	branch = main
 [submodule "services/document-service"]
 	path = services/document-service
 	url = https://github.com/tech-beeline/beeatlas-document-service.git
+	branch = main
 [submodule "services/cx-service"]
 	path = services/cx-service
 	url = https://github.com/tech-beeline/beeatlas-fdm-cx-service.git
+	branch = main
 [submodule "services/events-history"]
 	path = services/events-history
 	url = https://github.com/tech-beeline/beeatlas-events-history.git
+	branch = master
 [submodule "services/fdm-pack-loader"]
 	path = services/fdm-pack-loader
 	url = https://github.com/tech-beeline/beeatlas-fdm-pack-loader.git
+	branch = main
+[submodule "services/fdm-bpm"]
+	path = services/fdm-bpm
+	url = https://github.com/tech-beeline/beeatlas-fdm-bpm.git
+	branch = main
