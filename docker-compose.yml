@@ -1,6 +1,7 @@
 services:
   postgres:
     image: postgres:15-alpine
+    command: postgres -c 'max_connections=200'
     container_name: fdm-postgres
     restart: unless-stopped
     environment:
@@ -476,7 +477,7 @@ services:
     networks:
       - fdm-network
     restart: unless-stopped
-    
+
   document-service:
     build:
       context: ./services/document-service
@@ -521,7 +522,6 @@ services:
     env_file:
       - ./common.env
     environment:
-      APP_AMBASSADOR_AUTH: "false"
       SPRING_RABBITMQ_TEMPLATE_EXCHANGE: ${PACK_LOADER_RABBITMQ_EXCHANGE:-pack.loader.exchange}
       SPRING_RABBITMQ_TEMPLATE_ROUTING_KEY: ${PACK_LOADER_RABBITMQ_ROUTING_KEY:-pack.loader.routing}
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
@@ -555,7 +555,6 @@ services:
     env_file:
       - ./common.env
     environment:
-      APP_AMBASSADOR_AUTH: "false"
       SPRING_RABBITMQ_TEMPLATE_EXCHANGE: ${EVENTS_HISTORY_RABBITMQ_EXCHANGE:-events.history.exchange}
       SPRING_RABBITMQ_TEMPLATE_ROUTING_KEY: ${EVENTS_HISTORY_RABBITMQ_ROUTING_KEY:-events.history}
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
@@ -572,6 +571,48 @@ services:
       start_period: 60s
     ports:
       - "${EVENTS_HISTORY_SERVICE_PORT:-8093}:8080"
+    networks:
+      - fdm-network
+    restart: unless-stopped
+
+  fdm-bpm-backend:
+    build:
+      context: ../beeatlas-fdm-bpm
+      dockerfile: Dockerfile
+    container_name: fdm-bpm-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+      - ./common.env
+    environment:
+      SPRING_DATASOURCE_CAMUNDA_URL: jdbc:postgresql://postgres:5432/fdm_db
+      SPRING_DATASOURCE_CAMUNDA_USERNAME: postgres
+      SPRING_DATASOURCE_CAMUNDA_PASSWORD: postgres
+      SPRING_DATASOURCE_PROCESSES_URL: jdbc:postgresql://postgres:5432/fdm_db
+      SPRING_DATASOURCE_PROCESSES_USERNAME: postgres
+      SPRING_DATASOURCE_PROCESSES_PASSWORD: postgres
+      SPRING_DATASOURCE_GIT_URL: jdbc:postgresql://postgres:5432/fdm_db
+      SPRING_DATASOURCE_GIT_USERNAME: postgres
+      SPRING_DATASOURCE_GIT_PASSWORD: postgres
+      SPRING_RABBITMQ_TEMPLATE_EXCHANGE: ${FDM_BPM_RABBITMQ_EXCHANGE:-fdm.bpm.exchange}
+      SPRING_RABBITMQ_TEMPLATE_ROUTING_KEY: ${FDM_BPM_RABBITMQ_ROUTING_KEY:-fdm.bpm}
+      SPRING_JPA_PROCESSES_HIBERNATE_DDL_AUTO: none
+      SPRING_JPA_PROCESSES_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: processes
+      SPRING_FLYWAY_DEFAULT_SCHEMA: processes
+      SPRING_FLYWAY_BASELINE_ON_MIGRATE: "true"
+      SPRING_FLYWAY_CLEAN_DISABLED: "true"
+      CAMUNDA_BPM_DATABASE_SCHEMA_UPDATE: "true"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 90s
+    ports:
+      - "${FDM_BPM_SERVICE_PORT:-8094}:8080"
     networks:
       - fdm-network
     restart: unless-stopped

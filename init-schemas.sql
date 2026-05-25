@@ -4,6 +4,13 @@ CREATE SCHEMA IF NOT EXISTS user_auth;
 CREATE SCHEMA IF NOT EXISTS techradar;
 CREATE SCHEMA IF NOT EXISTS pack_loader;
 CREATE SCHEMA IF NOT EXISTS entity_events;
+CREATE SCHEMA IF NOT EXISTS processes;
+
+CREATE TABLE IF NOT EXISTS public.v_fdm_gitlab_languages (
+    cmdb_code       VARCHAR(255) PRIMARY KEY,
+    proj_lang       VARCHAR(255),
+    extraction_date DATE
+);
 
 DO $$
 BEGIN
