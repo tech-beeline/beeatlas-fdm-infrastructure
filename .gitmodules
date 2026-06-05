@@ -50,3 +50,7 @@
 	path = services/fdm-bpm
 	url = https://github.com/tech-beeline/beeatlas-fdm-bpm.git
 	branch = main
+[submodule "services/ff-manager"]
+	path = services/ff-manager
+	url = https://github.com/tech-beeline/beeatlas-ff-manager.git
+	branch = main
