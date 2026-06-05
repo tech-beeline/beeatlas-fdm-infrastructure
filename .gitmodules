@@ -54,3 +54,7 @@
 	path = services/ff-manager
 	url = https://github.com/tech-beeline/beeatlas-ff-manager.git
 	branch = main
+[submodule "services/obs-dashboard"]
+	path = services/obs-dashboard
+	url = https://github.com/tech-beeline/beeatlas-obs-dashboard.git
+	branch = main
