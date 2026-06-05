@@ -196,6 +196,25 @@ services:
     networks:
       - fdm-network
 
+  # Read more info at https://github.com/AmoyLab/Unla
+  mcp-gateway:
+    image: ${IMAGE:-ghcr.io/amoylab/unla/allinone:latest}
+    ports:
+      - "18080:80"
+      - "5234:5234"
+      - "5235:5235"
+      - "5236:5236"
+    environment:
+      ENV: production
+      TZ: ${TZ:-UTC}
+      SUPER_ADMIN_USERNAME: admin
+      SUPER_ADMIN_PASSWORD: changeme-please-use-a-secure-password
+    volumes:
+      - ./unla/configs:/app/configs
+      - ./unla/data:/app/data
+      - ./unla/.env:/app/.env
+    restart: unless-stopped
+
   gateway:
     build:
       context: ./services/gateway
@@ -211,9 +230,9 @@ services:
     environment:
       JWKS: "jwks"
       SPRING_PROFILES_ACTIVE: local
-      CORS_ENABLED: true
-      DEMO_AUTH: true
-      AUTHENTIC_AUTH: true
+      CORS_ENABLED: 'true'
+      DEMO_AUTH: 'true'
+      AUTHENTIC_AUTH: 'true'
     networks:
       - fdm-network
 
@@ -385,7 +404,6 @@ services:
       - ./services/structurizr_backend:/opt/structurizr_backend
     ports:
       - "8086:8080"
-    env_file: "./services/structurizr_backend/.env"
     networks:
       - fdm-network
     depends_on:
@@ -572,11 +590,11 @@ services:
       - fdm-network
     restart: unless-stopped
 
-  fdm-bpm-backend:
+  fdm-bpm:
     build:
-      context: ../beeatlas-fdm-bpm
+      context: ./services/fdm-bpm
       dockerfile: Dockerfile
-    container_name: fdm-bpm-backend
+    container_name: fdm-bpm
     depends_on:
       postgres:
         condition: service_healthy
