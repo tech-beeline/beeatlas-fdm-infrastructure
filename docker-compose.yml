@@ -205,6 +205,7 @@ services:
   # Read more info at https://github.com/AmoyLab/Unla
   mcp-gateway:
     image: ${IMAGE:-ghcr.io/amoylab/unla/allinone:latest}
+    container_name: mcp-gateway
     ports:
       - "18080:80"
       - "5234:5234"
@@ -214,12 +215,34 @@ services:
       ENV: production
       TZ: ${TZ:-UTC}
       SUPER_ADMIN_USERNAME: admin
-      SUPER_ADMIN_PASSWORD: changeme-please-use-a-secure-password
+      SUPER_ADMIN_PASSWORD: secure-password
     volumes:
       - ./unla/configs:/app/configs
       - ./unla/data:/app/data
       - ./unla/.env:/app/.env
     restart: unless-stopped
+    networks:
+      - fdm-network
+
+  mcp-gateway-init:
+    image: curlimages/curl:latest
+    container_name: mcp-gateway-init
+    depends_on:
+      mcp-gateway:
+        condition: service_started
+    volumes:
+      - ./unla/configs/mcp:/configs:ro
+      - ./unla/scripts/bootstrap-mcp.sh:/bootstrap.sh:ro
+    environment:
+      UNLA_URL: http://mcp-gateway:5234
+      UNLA_USER: admin
+      UNLA_PASSWORD: secure-password
+      FDM_GATEWAY_URL: ${UNLA_FDM_GATEWAY_URL:-http://gateway:8080}
+      CONFIG_FILE: /configs/beeatlas-fdm.yaml
+    entrypoint: ["/bin/sh", "/bootstrap.sh"]
+    restart: "no"
+    networks:
+      - fdm-network
 
   gateway:
     build:

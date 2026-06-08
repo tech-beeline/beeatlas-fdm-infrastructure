@@ -1,0 +1,2024 @@
+name: Beeatlas-fdm API
+tenant: default
+routers:
+  - server: Beeatlas-fdm API_LQz8
+    prefix: /gateway/fdm
+    cors:
+      allowOrigins:
+        - '*'
+      allowMethods:
+        - GET
+        - POST
+        - OPTIONS
+      allowHeaders:
+        - Content-Type
+        - Authorization
+        - Mcp-Session-Id
+        - mcp-protocol-version
+      exposeHeaders:
+        - Mcp-Session-Id
+        - mcp-protocol-version
+      allowCredentials: true
+servers:
+  - name: Beeatlas-fdm API_LQz8
+    description: API документация
+    allowedTools:
+      - getCapabilityMapById
+      - getTechById
+      - getKidsById
+      - getById
+      - getCriteriaList
+      - getBusinessCapabilityOrderById
+      - getBusinessCapabilityHistory
+      - getTechCapabilityResp
+      - getParentsById
+      - getBusinessCapabilities
+      - getBusinessCapabilityTreeById
+      - getBusinessCapabilityOrderDraft
+      - getTechCapabilities
+      - getAllKidsIdById
+      - getBusinessCapabilityHistoryVersion
+      - getTechCapabilityHistory
+      - searchCapability
+      - getParentsById_1
+      - getTechCapabilityHistoryVersion
+      - getBusinessCapabilityTree
+      - getAllTech
+      - getTechByIdWithHistory
+      - listProductTechRelations
+      - getlistCategories
+      - getlistTechByCategoryIds
+      - getlistSectors
+      - listRings
+      - getPatternIdsByProduct
+      - listProcesses
+      - allPatterns
+      - getAllTechnologyPatterns
+      - getPatternsAutoCheck
+      - getAllPatternsGroup
+      - getTreePatternsGroup
+      - getPatternsByChapter
+      - getPatternsByIds
+      - getPatternId
+      - getAllFitnessFunctions
+      - getAllMnemonics
+      - getAllNfr
+      - getAllProductsAndTechRelations
+      - getAvailableProductsByCode
+      - getChapterPatterns
+      - getChaptersWithNfr
+      - getContainersFromStructurizr
+      - getContainersByCmdb
+      - getE2eProcessByCmdb
+      - getEmployeeByAlias
+      - getFitnessFunctionsByProduct
+      - getFitnessFunctionsAggregation
+      - getFreeAlias
+      - getDiscoveredInterface
+      - getMapicApi
+      - getNfrById
+      - getNfrByPatternId
+      - getParent
+      - getProductInfra
+      - getProductInfraContainsName
+      - getProductNfr
+      - getProductPatterns
+      - getProductsByCode
+      - getProductsByIds
+      - getProductsFromMapic
+      - getProductsFromStructurizr
+      - getProductsInfo
+      - getProductsInfoByCode
+      - getProductsWithTech
+      - getProductsByTechId
+      - getServiceSecretByApiKey
+      - getSourceMetrics
+      - getTCIdsByProductId
+      - getTcByContainerProduct
+      - requestToMapic
+      - searchInfra
+      - search_operationsByPathAndType
+      - search_operationsByTechCapabilityId
+      - search_operationsTreeByTechCapabilityId
+      - cx_getCJById
+      - cx_getBIByCJStep
+      - cx_getCJSteps
+      - cx_getBI
+      - cx_getCJStepById
+      - cx_getBIById
+      - cx_getCJv2
+      - cx_getCJByIdV3
+      - cx_getBIByIdV2
+      - cx_getBIParticipants
+      - cx_getBIFeelings
+      - cx_getBIChannels
+      - cx_getBIStatus
+      - cx_getCJ
+      - cx_getCJsByBiId
+      - cx_getBIByFilter
+      - cx_getEditabilityDtoBI
+      - cx_getCjAlerts
+      - getContextElements
+      - getInfluenceElements
+    config:
+      url: http://fdm-gateway-dev-eafdmmart.apps.yd-m6-kt22.vimpelcom.ru
+tools:
+  - name: getCapabilityMapById
+    description: Возвращает карту возможностей по идентификатору (id).
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/maps/{{.Args.Id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: Id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор карты.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getTechById
+    description: Возвращает техническую возможность по её id.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/tech-capabilities/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор технической возможности.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getKidsByIdV2
+    description: Возвращает дочерние бизнес-возможности для указанной (версия API v2).
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/capability/api/v2/business-capability/{{.Args.id}}/children
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор бизнес-возможности.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getKidsById
+    description: Возвращает список дочерних бизнес-возможностей для указанной.
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/capability/api/v1/business-capability/{{.Args.id}}/children
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор бизнес-возможности.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getById
+    description: Возвращает бизнес-возможность по её id.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/business-capability/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор бизнес-возможности.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getCriteriaList
+    description: Возвращает список критериев с учетом опционального фильтра.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/criterias'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: filter
+        position: query
+        required: false
+        type: string
+        description: Опциональный фильтр для списка критериев.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getBusinessCapabilityOrderById
+    description: Возвращает черновик/заказ публикации по id.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/business-capability/order/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор заказа/черновика.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getBusinessCapabilityHistory
+    description: Возвращает историю версий бизнес-возможности.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/business-capability/history/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор бизнес-возможности.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getTechCapabilityResp
+    description: Возвращает ТС, реализованные в продукте, за которые система ответственна.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/tech-capabilities/product/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор продукта.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getParentsById
+    description: Возвращает цепочку родителей для указанной технической возможности.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/tech-capabilities/{{.Args.id}}/parents'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор технической возможности.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getBusinessCapabilities
+    description: Возвращает список бизнес-возможностей с учетом фильтров и пагинации.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/business-capability'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: limit
+        position: query
+        required: false
+        type: integer
+        description: Максимальное число записей в ответе.
+        default: ''
+        items:
+          type: ''
+      - name: findBy
+        position: query
+        required: false
+        type: string
+        description: 'Режим фильтрации (например: ALL).'
+        default: ALL
+        items:
+          type: ''
+      - name: offset
+        position: query
+        required: false
+        type: integer
+        description: Смещение для пагинации.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getBusinessCapabilityTreeById
+    description: Возвращает дерево, построенное от указанной бизнес-возможности.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/business-capability/tree/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: Идентификатор бизнес-возможности (корень дерева).
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getBusinessCapabilityOrderDraft
+    description: Возвращает текущие черновики публикации каталога.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/business-capability/order/draft'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getTechCapabilities
+    description: Возвращает список технических возможностей с пагинацией.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/tech-capabilities'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: limit
+        position: query
+        required: false
+        type: integer
+        description: Максимальное число записей в ответе.
+        default: ''
+        items:
+          type: ''
+      - name: offset
+        position: query
+        required: false
+        type: integer
+        description: Смещение для пагинации.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getAllKidsIdById
+    description: Возвращает id всех дочерних бизнес-возможностей (включая вложенные).
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/capability/api/v1/business-capability/{{.Args.id}}/children/all
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор бизнес-возможности.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getBusinessCapabilityHistoryVersion
+    description: Возвращает сравнение указанной версии с другой (при наличии параметра).
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/capability/api/v1/business-capability/history/compare/{{.Args.id}}/{{.Args.version}}
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор бизнес-возможности.
+        default: ''
+        items:
+          type: ''
+      - name: version
+        position: path
+        required: true
+        type: number
+        description: Номер версии для сравнения.
+        default: ''
+        items:
+          type: ''
+      - name: other_version
+        position: query
+        required: false
+        type: number
+        description: 'Опционально: вторая версия для сравнения.'
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getTechCapabilityHistory
+    description: Возвращает историю версий технической возможности.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/tech-capabilities/history/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор технической возможности.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: searchCapability
+    description: Ищет Возможности, по сущностям, по строке запроса и типу поиска.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/find'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: findBy
+        position: query
+        required: false
+        type: string
+        description: Тип сущности для поиска (по умолчанию ALL).
+        default: ALL
+        items:
+          type: ''
+      - name: search
+        position: query
+        required: true
+        type: string
+        description: Строка поиска.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getParentsById_1
+    description: Возвращает цепочку родителей для указанной бизнес-возможности.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/business-capability/{{.Args.id}}/parents'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор бизнес-возможности.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getTechCapabilityHistoryVersion
+    description: Возвращает сравнение указанной версии с другой (при наличии параметра).
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/capability/api/v1/tech-capabilities/history/compare/{{.Args.id}}/{{.Args.version}}
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор технической возможности.
+        default: ''
+        items:
+          type: ''
+      - name: version
+        position: path
+        required: true
+        type: number
+        description: Номер версии для сравнения.
+        default: ''
+        items:
+          type: ''
+      - name: other_version
+        position: query
+        required: false
+        type: number
+        description: 'Опционально: вторая версия для сравнения.'
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getBusinessCapabilityTree
+    description: Возвращает дерево бизнес-возможностей.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/business-capability/tree'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getAllTech
+    description: >-
+      Получить список всех технологий. Возвращает список технологий. При наличии
+      параметра actualTech может фильтровать по актуальности.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/tech'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: actualTech
+        position: query
+        required: false
+        type: boolean
+        description: >-
+          Фильтр по актуальности технологии. Допустимые значения: true/false.
+          Если параметр не передан — возвращаются все технологии.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getTechByIdWithHistory
+    description: >-
+      Получить технологию по ID (с историей статусов). Возвращает технологию и
+      историю изменения её статусов по идентификатору.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/tech/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: >-
+          Идентификатор технологии (целое число). Пример: 123. Если технологии с
+          таким id нет — сервис вернёт 404.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: listProductTechRelations
+    description: >-
+      Получить связи продукт↔технология. Возвращает список продуктов и их связей
+      с технологиями.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/tech/product-tech'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getlistCategories
+    description: Получить список категорий технологий техрадара
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/category'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getlistTechByCategoryIds
+    description: >-
+      Получить технологии по категориям. Возвращает список технологий,
+      относящихся к переданным категориям.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/category/tech'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id_category
+        position: query
+        required: true
+        type: array
+        description: >-
+          Список идентификаторов категорий (массив целых чисел). Пример:
+          id_category=1&id_category=2&id_category=3.
+        default: ''
+        items:
+          type: integer
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getlistSectors
+    description: Получить список секторов. Возвращает все доступные сектора.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/sectors'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: listRings
+    description: Получить список колец. Возвращает все доступные кольца.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/rings'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: listProcesses
+    description: Получить список процессов. Возвращает все процессы.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/processes'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: allPatterns
+    description: Просмотр всех паттернов проектирования.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/patterns'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getAllTechnologyPatterns
+    description: Просмотр всех паттернов связанных с технологией.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/patterns/tech/{{.Args.tech_id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: tech_id
+        position: path
+        required: true
+        type: integer
+        description: 'Идентификатор технологии (целое число). Пример: 123.'
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getPatternsAutoCheck
+    description: >-
+      Просмотр паттернов принятых в компании, для которых есть правило
+      автоматической проверки.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/patterns/auto-check'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getAllPatternsGroup
+    description: Просмотр групп паттернов проектирования.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/pattern/group'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getTreePatternsGroup
+    description: Просмотр дерева групп паттернов проектирования.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/pattern/group/tree'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getPatternsByChapter
+    description: Получить паттерны по главе (chapter) из product.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/pattern/chapter/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: >-
+          Идентификатор главы (chapter) в product (целое число). Пример: 10.
+          Если chapter не найден — 404.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getPatternsByIds
+    description: >-
+      Получить список паттернов по списку id из query (ids через запятую;
+      дубликаты отбрасываются).
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/pattern/by-ids'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: ids
+        position: query
+        required: true
+        type: string
+        description: >-
+          Идентификаторы паттернов одной строкой через запятую. Пример: "1,2,3".
+          Пробелы допустимы, дубликаты будут отброшены. Если строка
+          пустая/невалидная — 400.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getPatternId
+    description: Просмотр паттерна по id.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/pattern/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: 'Идентификатор паттерна (целое число). Пример: 10.'
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getAllFitnessFunctions
+    description: >-
+      Полный справочник фитнес-функций. Все записи FF из каталога с кодами,
+      статусами и ссылками на документацию.
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/ff'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getAllMnemonics
+    description: >-
+      Список мнемоник (alias) всех продуктов. Только строковые идентификаторы
+      (mnemonic/cmdb), без связей с технологиями — не путать с
+      /v1/products/relations/tech.
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/products/mnemonic'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getAllNfr
+    description: Получить все актуальные версии требований NFR (без дублей по core_id)
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/nfr'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getAllProductsAndTechRelations
+    description: Все продукты со связями на технологии Techradar
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/products/relations/tech'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getAvailableProductsByCode
+    description: Доступность продукта
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.id}}/availability'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: string
+        description: Строковый идентификатор продукта
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getChapterPatterns
+    description: >-
+      Идентификаторы паттернов для главы (chapter). Список pattern_id из
+      Techradar, связанных с жизненной ситуацией.
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/chapter/{{.Args.id}}/patterns'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор главы
+        default: ''
+        items:
+          type: int32
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getChaptersWithNfr
+    description: >-
+      Получить жизненные ситуации по NFR: дерево/список chapters, связанных с
+      нефункциональными требованиями.
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/chapter'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getContainersFromStructurizr
+    description: Просмотр контейнеров, их интерфейсов и методов в structurizr
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.cmdb}}/container'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: cmdb
+        position: path
+        required: true
+        type: string
+        description: CMDB-код продукта
+        default: ''
+        items:
+          type: ''
+      - name: show-hidden
+        position: query
+        required: false
+        type: boolean
+        description: ''
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getContainersByCmdb
+    description: 'Контейнеры и интерфейсы Structurizr по CMDB '
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/product/api/v1/product/{{.Args.cmdb}}/container?show-hidden={{.Args.show_hidden}}
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: cmdb
+        position: path
+        required: true
+        type: string
+        description: CMDB-мнемоника продукта
+        default: ''
+        items:
+          type: ''
+      - name: show_hidden
+        position: query
+        required: false
+        type: boolean
+        description: >-
+          Показывать скрытые контейнеры/интерфейсы (query `show-hidden`). По
+          умолчанию false.
+        default: 'false'
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getE2eProcessByCmdb
+    description: End-to-end процессов по продукту
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.cmdb}}/e2e'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: cmdb
+        position: path
+        required: true
+        type: string
+        description: CMDB-код продукта
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getEmployeeByAlias
+    description: Получить сотрудника по алиасу
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.alias}}/employee'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: alias
+        position: path
+        required: true
+        type: string
+        description: Алиас сотрудника
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getFitnessFunctionsByProduct
+    description: Получить результаты фитнес-функций по продукту
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.alias}}/fitness-function'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: alias
+        position: path
+        required: true
+        type: string
+        description: Alias продукта
+        default: ''
+        items:
+          type: ''
+      - name: source_id
+        position: query
+        required: false
+        type: integer
+        description: ID источника оценки
+        default: ''
+        items:
+          type: ''
+      - name: source_type
+        position: query
+        required: false
+        type: string
+        description: Тип источника оценки
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getFitnessFunctionsAggregation
+    description: >-
+      Агрегированные результаты фитнес-функций для дашборда (сводная статистика
+      по оценкам FF без детализации по отдельному продукту)
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/dashboard/fitness-function'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getFreeAlias
+    description: Проверить, свободен ли alias продукта
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.alias}}/free'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: alias
+        position: path
+        required: true
+        type: string
+        description: Alias продукта
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getInfluencesByCmdb
+    description: Влияния продукта по CMDB-коду
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.cmdb}}/influence'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: cmdb
+        position: path
+        required: true
+        type: string
+        description: CMDB-код продукта
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getDiscoveredInterface
+    description: >-
+      Получить обнаруженный интерфейс с операциями (ровно один из параметров id,
+      external-id или api-id должен быть задан для поиска)
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/discovered-interface'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: query
+        required: false
+        type: integer
+        description: Внутренний ID интерфейса
+        default: ''
+        items:
+          type: int32
+      - name: external-id
+        position: query
+        required: false
+        type: integer
+        description: Внешний идентификатор из источника
+        default: ''
+        items:
+          type: int32
+      - name: api-id
+        position: query
+        required: false
+        type: integer
+        description: Идентификатор API в Mapic
+        default: ''
+        items:
+          type: int32
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getMapicApi
+    description: >-
+      Спецификация API по id в таблице mapic.api. Возвращает строковое
+      представление спецификации (например OpenAPI в текстовом виде).
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/mapic/spec/{{.Args.api-id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: api-id
+        position: path
+        required: true
+        type: integer
+        description: Идентификатор API в Mapic
+        default: ''
+        items:
+          type: int32
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getNfrById
+    description: Получить NFR по id (конкретную версию)
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/nfr/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: Идентификатор NFR
+        default: ''
+        items:
+          type: int32
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getNfrByPatternId
+    description: Список NFR, связанных с паттерном Techradar
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/requirement/pattern/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: Идентификатор паттерна
+        default: ''
+        items:
+          type: int32
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getParent
+    description: Получить родительский элемент инфраструктуры
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/parent'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: query
+        required: true
+        type: integer
+        description: ID дочерней сущности
+        default: ''
+        items:
+          type: int32
+      - name: type
+        position: query
+        required: true
+        type: string
+        description: Тип сущности (контракт домена)
+        default: ''
+        items:
+          type: string
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductInfra
+    description: Получить инфраструктуру продукта
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/infra'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: productId
+        position: query
+        required: true
+        type: integer
+        description: Идентификатор продукта
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductInfraContainsName
+    description: Поиск инфраструктуры продукта по имени
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/infra/contains'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: name
+        position: query
+        required: true
+        type: string
+        description: Подстрока для поиска по имени
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductNfr
+    description: Получить все актуальные версии требований NFR, связанные с продуктом
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/nfr/product'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: query
+        required: false
+        type: number
+        description: ''
+        default: ''
+        items:
+          type: int32
+      - name: alias
+        position: query
+        required: false
+        type: string
+        description: ''
+        default: ''
+        items:
+          type: ''
+      - name: api-key
+        position: query
+        required: false
+        type: string
+        description: ''
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductPatterns
+    description: >-
+      Паттерны Techradar, связанные с продуктом (опциональная фильтрация по
+      источнику)
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.alias}}/patterns'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: alias
+        position: path
+        required: false
+        type: string
+        description: Alias продукта
+        default: ''
+        items:
+          type: string
+      - name: source-id
+        position: query
+        required: false
+        type: integer
+        description: Идентификатор источника (опционально)
+        default: ''
+        items:
+          type: int32
+      - name: source-type
+        position: query
+        required: false
+        type: string
+        description: Тип источника (опционально)
+        default: ''
+        items:
+          type: string
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductsByCode
+    description: Полная карточка продукта по alias. Путь `code` — alias (код) продукта.
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.code}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: code
+        position: path
+        required: true
+        type: string
+        description: Alias продукта
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductsByIds
+    description: Получить продукты по списку id
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/by-ids'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: ids
+        position: query
+        required: true
+        type: array
+        description: >-
+          Идентификаторы продуктов, пример запроса:
+          ids=1&ids=2&ids=3&ids=4&ids=5
+        default: ''
+        items:
+          type: number
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductsFromMapic
+    description: Получить интерфейсы из Mapic для продукта
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.cmdb}}/interface/mapic'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: cmdb
+        position: path
+        required: true
+        type: string
+        description: CMDB-код продукта
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductsFromStructurizr
+    description: Получить интерфейсы из Structurizr для продукта
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.cmdb}}/interface/arch'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: cmdb
+        position: path
+        required: true
+        type: string
+        description: CMDB-код продукта
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductsInfo
+    description: Получить краткую информацию о продуктах, без данных по ключам structurizr
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/info'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductsInfoByCode
+    description: Краткая информация о продукте по alias
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.code}}/info'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: code
+        position: path
+        required: true
+        type: string
+        description: Alias продукта
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductsWithTech
+    description: >-
+      Все продукты с привязанными технологиями. Плоский список продуктов, у
+      которых есть связи с технологиями в сервисе.
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product-tech-relation'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductsByTechId
+    description: Продукты, использующие технологию (по id технологии из Techradar)
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/tech/{{.Args.techId}}/product'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: techId
+        position: path
+        required: true
+        type: integer
+        description: Id технологии
+        default: ''
+        items:
+          type: int32
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getServiceSecretByApiKey
+    description: API ключ сервиса по api-key
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/service/api-secret/{{.Args.api_key}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: api-key
+        position: path
+        required: true
+        type: string
+        description: ''
+        default: ''
+        items:
+          type: ''
+      - name: api_key
+        position: path
+        required: true
+        type: string
+        description: ''
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getSourceMetrics
+    description: >-
+      Получить метрики источников. Возвращает агрегированный объект метрик (поля
+      DTO), а не массив отдельных записей.
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/source-metric'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getTCIdsByProductId
+    description: Список реализованных ТС (tech-capability) по продукту
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.id}}/tc-implementation'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: ''
+        default: ''
+        items:
+          type: int32
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getTcByContainerProduct
+    description: Получение ТС реализованных в контейнерах продукта
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/product/api/v1/product/implemented/container/tech-capability
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: containers
+        position: query
+        required: false
+        type: string
+        description: Идентификатор контейнера
+        default: containers=container1&containers=container2&containers=container3
+        items:
+          type: int64
+      - name: alias
+        position: query
+        required: false
+        type: string
+        description: code продукта
+        default: alias=my-product
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getPatternIdsByProduct
+    description: >-
+      Идентификаторы паттернов по продукту (ровно один из параметров id, alias
+      или api-key обязателен. Пустой массив — если у продукта нет подходящих NFR
+      или паттернов)
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/pattern/product'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: query
+        required: false
+        type: integer
+        description: Числовой ID продукта
+        default: ''
+        items:
+          type: int32
+      - name: alias
+        position: query
+        required: false
+        type: string
+        description: Alias (код) продукта
+        default: ''
+        items:
+          type: string
+      - name: api-key
+        position: query
+        required: false
+        type: string
+        description: API-ключ продукта для идентификации
+        default: ''
+        items:
+          type: string
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: requestToMapic
+    description: >-
+      Опубликованные API продукта из Mapic (список PublishedApiDTO для
+      CMDB-мнемоники, совместимый с форматом Mapic)
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/mapic/product/{{.Args.cmdb}}/published-api'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: cmdb
+        position: path
+        required: true
+        type: string
+        description: CMDB-мнемоника продукта
+        default: ''
+        items:
+          type: string
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: searchInfra
+    description: Поиск инфраструктуры по продуктам/критериям
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/infra/search'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: parameter
+        position: query
+        required: true
+        type: string
+        description: Имя параметра для поиска
+        default: ''
+        items:
+          type: string
+      - name: value
+        position: query
+        required: true
+        type: string
+        description: Значение параметра для поиска
+        default: ''
+        items:
+          type: string
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: search_operationsByPathAndType
+    description: Поиск операций по пути и типу поиска
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/operation'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: path
+        position: query
+        required: false
+        type: string
+        description: Фрагмент URL или пути операции
+        default: ''
+        items:
+          type: ''
+      - name: type
+        position: query
+        required: false
+        type: string
+        description: Тип объекта поиска (контракт сервиса)
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: search_operationsByTechCapabilityId
+    description: Поиск операций по id технической возможности (ТС)
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/operation/tech-capability/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: ID технической возможности
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: search_operationsTreeByTechCapabilityId
+    description: Поиск дерева операций по id технической возможности (ТС)
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/operation/tech-capability/{{.Args.id}}/tree'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: ID технической возможности
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getCJById
+    description: Получение CJ по id Возвращает полную CJ (v1) по идентификатору.
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/product/cj/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: ID Customer Journey (CJ).
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getBIByCJStep
+    description: BI по шагу CJ Возвращает список BI, привязанных к шагу CJ по id шага.
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/product/cj/step/{{.Args.id}}/bi'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: ID шага Customer Journey (CJ Step).
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getCJSteps
+    description: Список шагов CJ Возвращает коллекцию шагов CJ по id CJ.
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/product/cj/{{.Args.id}}/step'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: ID Customer Journey (CJ).
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getBI
+    description: >-
+      Получение BI по продукту Возвращает бизнес-сценарии (BI). Если
+      `id_product` не задан — возвращаются BI без фильтра по продукту.
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/cx/api/cx/v1/library/business-interactions?id_product={{.Args.id_product}}
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id_product
+        position: query
+        required: false
+        type: integer
+        description: Фильтр по ID продукта.
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getCJStepById
+    description: Шаг CJ по id Возвращает шаг CJ (расширенное представление) по id шага.
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/product/cj/step/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: ID шага Customer Journey (CJ Step).
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getBIById
+    description: Получение BI по id Возвращает BI (v1 DTO) по идентификатору.
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/library/business-interactions/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: ID Business Interaction (BI).
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getCJv2
+    description: >-
+      Список CJ (v2) Версия v2 списка CJ. По `HeaderInterceptor` URI содержит
+      `/v2/product/cj`, поэтому заголовки могут не требоваться.
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/cx/api/cx/v2/product/cj?product-id={{.Args.product_id}}&sample={{.Args.sample}}&search={{.Args.search}}
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: product_id
+        position: query
+        required: false
+        type: integer
+        description: Фильтр по ID продукта (query-параметр `product-id`).
+        default: ''
+        items:
+          type: int64
+      - name: sample
+        position: query
+        required: false
+        type: string
+        description: 'Режим выборки. Возможные значения: ALL, PUBLIC, DRAFT.'
+        default: ALL
+        items:
+          type: ''
+      - name: search
+        position: query
+        required: false
+        type: string
+        description: Поиск по имени (подстрока).
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getCJByIdV3
+    description: Получение CJ по id (v2) Возвращает полную CJ (v2) по идентификатору.
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v2/product/cj/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: ID Customer Journey (CJ).
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getBIByIdV2
+    description: >-
+      Получение BI по id (v2) Возвращает расширенный BI (v2 DTO) по
+      идентификатору.
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v2/library/business-interactions/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: ID Business Interaction (BI).
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getBIParticipants
+    description: 'Справочник BI: участники Возвращает справочник участников BI.'
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/references/participants'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getBIFeelings
+    description: 'Справочник BI: чувства Возвращает справочник чувств для карточки BI.'
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/references/feelings'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getBIChannels
+    description: 'Справочник BI: каналы Возвращает справочник каналов BI.'
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/references/channels'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getBIStatus
+    description: 'Справочник BI: статусы Возвращает справочник статусов BI.'
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/references/bi_status'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getCJ
+    description: >-
+      Список CJ (v1) Возвращает список CJ с фильтрацией по продукту, выборке
+      (`sample`) и поиску по имени. Учитывает доступные пользователю продукты.
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/cx/api/cx/v1/product/cj?idProduct={{.Args.idProduct}}&sample={{.Args.sample}}&search={{.Args.search}}
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: idProduct
+        position: query
+        required: false
+        type: integer
+        description: Фильтр по ID продукта (внешний идентификатор продукта).
+        default: ''
+        items:
+          type: int64
+      - name: sample
+        position: query
+        required: false
+        type: string
+        description: 'Режим выборки. Возможные значения: ALL, PUBLIC, DRAFT.'
+        default: ALL
+        items:
+          type: ''
+      - name: search
+        position: query
+        required: false
+        type: string
+        description: Поиск по имени (подстрока).
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getCJsByBiId
+    description: CJ по BI Возвращает список CJ, в которых используется BI по id BI.
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/product/cj/step/bi/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: ID Business Interaction (BI).
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getBIByFilter
+    description: >-
+      Поиск BI по фильтру Фильтрация по тексту, продукту, статусу и признаку
+      черновика. Параметры можно комбинировать.
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/cx/api/cx/v1/library/business-interactions/find?text={{.Args.text}}&id_product={{.Args.id_product}}&id_status={{.Args.id_status}}&draft={{.Args.draft}}
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: text
+        position: query
+        required: false
+        type: string
+        description: Текст для поиска (по названию/номеру BI).
+        default: ''
+        items:
+          type: ''
+      - name: id_product
+        position: query
+        required: false
+        type: integer
+        description: Фильтр по ID продукта.
+        default: ''
+        items:
+          type: int64
+      - name: id_status
+        position: query
+        required: false
+        type: integer
+        description: Фильтр по ID статуса BI.
+        default: ''
+        items:
+          type: int64
+      - name: draft
+        position: query
+        required: false
+        type: boolean
+        description: Фильтр по признаку черновика.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getEditabilityDtoBI
+    description: >-
+      Проверка редактируемости BI Возвращает признак возможности редактирования
+      BI для текущего пользователя/контекста.
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/cx/api/cx/v1/library/business-interactions/editability/{{.Args.id}}
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: ID Business Interaction (BI).
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getCjAlerts
+    description: >-
+      CJ алерты Возвращает список CJ с BI и шагами BI для сценариев
+      алертинга/мониторинга. Заголовки не требуются (исключение в
+      HeaderInterceptor).
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/cj/alerts'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getContextElements
+    description: >-
+      получение внешних систем, которые вызывают систему (продукт) из запроса
+      (системы которые зависят от системы из запроса)
+    method: GET
+    endpoint: '{{.Config.url}}/arch-graph/api/v1/context/elements'
+    headers:
+      Content-Type: application/json
+    args:
+      - name: cmdb
+        position: ''
+        required: true
+        type: string
+        description: cmdb Продукта
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getInfluenceElements
+    description: >-
+      Это получение внешних систем, которые вызывает система (продукт) из
+      запроса (системы от которых зависит система из запроса)
+    method: GET
+    endpoint: '{{.Config.url}}/arch-graph/api/v1/context/influence/elements'
+    headers:
+      Content-Type: application/json
+    args:
+      - name: cmdb
+        position: query
+        required: false
+        type: string
+        description: ''
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+prompts: []
+mcpServers: []
+createdAt: '2026-05-06T12:50:31.809Z'
+updatedAt: '2026-05-21T09:21:23.832463326Z'
