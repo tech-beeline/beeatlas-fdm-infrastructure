@@ -674,6 +674,28 @@ services:
       - fdm-network
     restart: unless-stopped
 
+  fdm-bpm-local-init:
+    image: postgres:15-alpine
+    container_name: fdm-bpm-local-init
+    depends_on:
+      postgres:
+        condition: service_healthy
+      fdm-bpm:
+        condition: service_healthy
+    volumes:
+      - ./scripts/fdm-bpm-local-urls.sql:/init.sql:ro
+    environment:
+      PGPASSWORD: postgres
+    entrypoint: >
+      /bin/sh -c "
+      until psql -h postgres -U postgres -d fdm_db -tAc \"SELECT 1 FROM information_schema.tables WHERE table_schema='processes' AND table_name='application_type_enum'\" | grep -q 1; do sleep 2; done &&
+      psql -h postgres -U postgres -d fdm_db -v ON_ERROR_STOP=1 -f /init.sql
+      "
+    restart: "no"
+    networks:
+      - fdm-network
+
+
   ff-manager:
     image: ghcr.io/tech-beeline/beeatlas-ff-manager:latest
     container_name: ff-manager
