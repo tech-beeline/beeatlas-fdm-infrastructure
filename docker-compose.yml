@@ -268,7 +268,7 @@ services:
 
   beeatlas-frontend:
     build:
-      context: ../beeatlas-prospect-frontend
+      context: ./services/prospect-frontend
       dockerfile: Dockerfile
     container_name: beeatlas-frontend
     restart: unless-stopped
@@ -293,7 +293,7 @@ services:
 
   beeatlas-doc:
     build:
-      context: ../beeatlas-doc
+      context: ./services/beeatlas-doc
       dockerfile: Dockerfile
     container_name: beeatlas-doc
     restart: unless-stopped
