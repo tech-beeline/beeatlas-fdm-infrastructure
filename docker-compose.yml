@@ -318,7 +318,7 @@ services:
       AUTHBASIC: "Basic xxxxxxxx"
       TECHUSER: "tech-user"
       TECHPASSWORD: "tech-password"
-      FDM_AUTH_KAFKA_ENABLED: false
+      FDM_AUTH_KAFKA_ENABLED: 'false'
       INTEGRATION_MYPROFILE_SERVER_URL: https://myprofile
       INTEGRATION_MYPROFILE_TOKEN: token
       OTEL_EXPORTER_OTLP_ENDPOINT:  # заменить на URL OTEL
