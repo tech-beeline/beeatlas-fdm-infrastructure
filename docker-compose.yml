@@ -286,6 +286,7 @@ services:
       FLAG_AUTHENTIK_URL: http://localhost:5000
       FLAG_AUTHENTIK_CLIENT_ID: SxbmzvcDJHqs415xgqo8hPQh6CtHvop5jFGF1Wb2
       FLAG_DOC_SERVICE_URL: http://localhost:8097
+      FLAG_WEBIDE_URL: http://localhost:8088
       NGINX_LOCATION_API_GATEWAY: http://gateway:8080
       NGINX_LOCATION_API: http://gateway:8080
     networks:
@@ -543,7 +544,7 @@ services:
       retries: 12
       start_period: 60s
     ports:
-      - "${CX_SERVICE_PORT:-8088}:8080"
+      - "${CX_SERVICE_PORT:-8098}:8080"
     networks:
       - fdm-network
     restart: unless-stopped
@@ -794,6 +795,29 @@ services:
       E2E_TEMPLATE_URL: http://grafana-service:8080/d/local-e2e-template/demo
     ports:
       - "${OBS_DASHBOARD_SERVICE_PORT:-8096}:3000"
+    networks:
+      - fdm-network
+    restart: unless-stopped
+
+  web-ide:
+    build:
+      context: ./web-ide
+      args:
+        USER_UID: 1000
+        USER_GID: 1000
+    container_name: web-ide
+    ports:
+      - "8088:8080"
+    environment:
+      - PASSWORD=my_secure_password
+      - WORKSPACE=workspace
+    volumes:
+      # Монтируем папку с проектами
+      - ./workspace:/home/vscode/workspace
+      # Том для расширений (сохраняются между перезапусками)
+      - ./web-ide/vscode-extensions:/home/vscode/.local/share/code-server/extensions
+      # Монтируем локальную папку с сертификатами (если есть)
+      - ./certs:/certs:ro
     networks:
       - fdm-network
     restart: unless-stopped

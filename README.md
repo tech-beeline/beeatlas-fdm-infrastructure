@@ -475,7 +475,8 @@ docker compose restart capability-backend
 | **techradar-backend** | http://localhost:8085 | |
 | **structurizr-backend** | http://localhost:8086/docs | OpenAPI |
 | **Structurizr On-Premises** | http://localhost:8087 | |
-| **cx-service** | http://localhost:8088 | |
+| **cx-service** | http://localhost:8098 | |
+| **web-ide** | http://localhost:8088 | vs-code server with C4 extension |
 | **notifications-service** | http://localhost:8089 | |
 | **document-service** | http://localhost:8091 | |
 | **fdm-pack-loader** | http://localhost:8092 | |
