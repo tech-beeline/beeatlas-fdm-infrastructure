@@ -1,0 +1,61 @@
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: n8n
+    user: root
+    restart: unless-stopped
+    env_file:
+      - ./n8n.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      n8n-postgres-init:
+        condition: service_completed_successfully
+    ports:
+      - "${N8N_PORT:-5678}:5678"
+    volumes:
+      - ./data:/home/node/.n8n
+      - n8n-data:/home/node/.cache
+    networks:
+      - fdm-network
+
+  n8n-postgres-init:
+    image: postgres:15-alpine
+    container_name: n8n-postgres-init
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: postgres
+    entrypoint: >
+      /bin/sh -c "
+      until pg_isready -h postgres -U postgres -d postgres >/dev/null 2>&1; do sleep 1; done;
+      psql -v ON_ERROR_STOP=1 -h postgres -U postgres -d postgres -tc \"SELECT 1 FROM pg_roles WHERE rolname = 'n8n'\" | grep -q 1 || createuser -h postgres -U postgres --login --no-superuser --createdb --no-createrole n8n;
+      psql -v ON_ERROR_STOP=1 -h postgres -U postgres -d postgres -c \"ALTER ROLE n8n WITH PASSWORD 'n8n';\";
+      psql -v ON_ERROR_STOP=1 -h postgres -U postgres -d postgres -tc \"SELECT 1 FROM pg_database WHERE datname = 'n8n'\" | grep -q 1 || createdb -h postgres -U postgres -O n8n n8n
+      "
+    restart: "no"
+    networks:
+      - fdm-network
+
+  n8n-init:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: n8n-init
+    user: root
+    restart: "no"
+    depends_on:
+      n8n:
+        condition: service_started
+    env_file:
+      - ./n8n.env
+    volumes:
+      - ./workflows:/workflows:ro
+      - ./init-workflow.sh:/init-workflow.sh:ro
+    entrypoint: ["/bin/sh", "/init-workflow.sh"]
+    networks:
+      - fdm-network
+
+volumes:
+  n8n-data:

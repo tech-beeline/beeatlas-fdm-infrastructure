@@ -1,0 +1,54 @@
+{
+  "id": "starter-workflow-product-data-import",
+  "name": "Starter workflow for product data import",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "f0a0e3d2-23bc-4f93-9eb4-6f4b5be8bb0b",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "assign-message",
+              "name": "message",
+              "value": "Starter workflow ready for product data rollout",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "3cba19a0-4879-4e34-bd0d-845789a304a2",
+      "name": "Set sample payload",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [500, 300]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set sample payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d86f2880-12ef-4f5c-93ae-8d98f32e4ee7",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}
