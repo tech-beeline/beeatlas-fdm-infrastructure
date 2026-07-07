@@ -1,4 +1,7 @@
 
+include:
+  - ./3rd-party/n8n/compose.n8n.yml
+
 services:
   postgres:
     image: postgres:15-alpine
@@ -805,3 +808,4 @@ volumes:
   neo4j_import:
   neo4j_plugins:
   authentik-postgres-data:
+  n8n-data:
