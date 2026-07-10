@@ -62,7 +62,7 @@ entries:
     attrs:
       name: FDM logout redirect
       mode: static
-      target_static: http://localhost:5000  # change it to https://<your.host.or.ip>:8443 if needed
+      target_static: https://localhost:8443  # change it to https://<your.host.or.ip>:8443 if needed
 
   - model: authentik_flows.flowstagebinding
     state: present

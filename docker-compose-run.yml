@@ -1,9 +1,6 @@
 
 services:
   ingress:
-    profiles:
-     - custom # remove that if needed to run automatically
-    # This service is needed for command development on external shared compose node, not localhost. It terminates ssl
     build:
       context: .
       dockerfile: Dockerfile
@@ -15,7 +12,7 @@ services:
       - ./ingress/ingress.conf:/etc/nginx/conf.d/default.conf:ro
       - ./ingress/certs:/etc/nginx/certs
     ports:
-      - "8433:8443" # beeatlas-frontend
+      - "8443:8443" # beeatlas-frontend
       - "9443:9443" # authentik-server
     networks:
       - fdm-network

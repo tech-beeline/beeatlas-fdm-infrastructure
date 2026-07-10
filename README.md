@@ -210,12 +210,14 @@ API через gateway при этом работает в demo-режиме (`D
 ```mermaid
 sequenceDiagram
     participant U as Браузер
+    participant F as Frontend ingress SSL :8443
     participant F as Frontend :3000
     participant A as Authentik :5000
+    participant A as Authentik ingress SSL:9443
     participant G as Gateway :8080
     participant Auth as fdm-auth-backend
 
-    U->>F: Открыть http://localhost:3000
+    U->>F: Открыть https://localhost:8443
     F->>A: OIDC redirect (логин)
     A->>F: code + tokens (sub=defaultUser)
     F->>G: GET /user/defaultUser/roles
@@ -270,7 +272,7 @@ curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/application/o/beeat
 
 Ожидается **`200`**. Если **`404`** — blueprint ещё не применился или упал с ошибкой, см. [устранение неполадок](#устранение-неполадок).
 
-**Шаг 4.** Откройте frontend: **http://localhost:3000**
+**Шаг 4.** Откройте frontend: **https://localhost:8443**
 
 **Шаг 5.** На редиректе в Authentik войдите:
 
@@ -284,8 +286,8 @@ curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/application/o/beeat
 ### Пошаговая инструкция: выход
 
 1. В UI нажмите **Выход**.
-2. Frontend отправит запрос на `http://localhost:5000/application/o/beeatlas/end-session/`.
-3. Authentik завершит сессию и перенаправит на `http://localhost:5000`.
+2. Frontend отправит запрос на `https://localhost:9443/application/o/beeatlas/end-session/`.
+3. Authentik завершит сессию и перенаправит на `https://localhost:9443`.
 
 Если при выходе **404** — проверьте, что в Authentik есть приложение со slug **`beeatlas`** (не `fdm-app`). См. [устранение неполадок](#устранение-неполадок).
 
@@ -298,10 +300,10 @@ curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/application/o/beeat
 | Файл | `authentik-blueprints/fdm-minimal.yaml` |
 | OAuth2-приложение | slug **`beeatlas`**, имя `beeatlas` |
 | `client_id` | `SxbmzvcDJHqs415xgqo8hPQh6CtHvop5jFGF1Wb2` |
-| Redirect URI | regex `http://localhost:3000/.*` |
+| Redirect URI | regex `https://localhost:8443/.*` |
 | Пользователь | `akadmin` → в токене `sub=defaultUser` |
 | Профиль в токене | Ivan Ivanov, `default@beeline.ru` |
-| Logout | invalidation flow → редирект на `http://localhost:5000` |
+| Logout | invalidation flow → редирект на `https://localhost:9443` |
 
 Проверка в админке Authentik (**http://localhost:5000**):
 
@@ -344,6 +346,14 @@ docker compose down ingress
 docker-compose up -d
 ```
 
+Проверка:
+
+```bash
+$ git diff
+```
+
+
+
 ### Устранение неполадок
 
 | Симптом | Причина | Решение |
@@ -352,7 +362,7 @@ docker-compose up -d
 | **404** на `/application/o/beeatlas/...` | приложение не создано или slug другой | Проверьте blueprint (статус `successful`); в Applications должен быть slug `beeatlas` |
 | **404** на `/user/.../roles` после логина | в токене `sub` не `defaultUser` | Перелогиньтесь; в blueprint scope mapping задаёт `sub` из `winaccountname` |
 | Blueprint в статусе **error** | синтаксическая ошибка YAML | `docker logs authentik-worker 2>&1 \| grep fdm-minimal`; исправьте файл, перезапустите worker |
-| Старая сессия / странное поведение | кэш OIDC в браузере | Очистите localStorage/sessionStorage для `localhost:3000`, перелогиньтесь |
+| Старая сессия / странное поведение | кэш OIDC в браузере | Очистите localStorage/sessionStorage для `localhost:8443`, перелогиньтесь |
 | Изменения blueprint не видны | worker не перечитал файл | `podman restart authentik-worker`, подождать 20–30 с |
 
 Логи worker:
@@ -365,8 +375,8 @@ docker logs authentik-worker 2>&1 | grep -E "fdm-minimal|blueprint|failed"
 
 | Что | URL / значение |
 |-----|----------------|
-| Frontend | http://localhost:3000 |
-| Authentik (UI + OIDC) | http://localhost:5000 |
+| Frontend | https://localhost:8443 |
+| Authentik (UI + OIDC) | https://localhost:9443 |
 | Админ Authentik | `akadmin` / `password` |
 | Demo-пользователь в API | `defaultUser` (логин в fdm-auth БД) |
 | OIDC discovery | http://localhost:5000/application/o/beeatlas/.well-known/openid-configuration |
@@ -484,6 +494,7 @@ docker compose restart capability-backend
 
 | Компонент | Host URL | Примечание |
 |-----------|----------|------------|
+| **INGRESS** | https://:8443  https://:9443| beeatlas-frontend |
 | **Frontend** | http://localhost:3000 | beeatlas-frontend |
 | **Gateway** | http://localhost:8080 | API / Swagger |
 | **Authentik UI** | http://localhost:5000 | OIDC, админка |
