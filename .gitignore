@@ -3,6 +3,7 @@ workspace/
 target/
 web-ide/vscode-extensions/
 certs/
+ingress/certs
 
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/

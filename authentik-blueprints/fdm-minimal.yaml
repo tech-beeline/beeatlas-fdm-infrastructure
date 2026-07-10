@@ -62,7 +62,7 @@ entries:
     attrs:
       name: FDM logout redirect
       mode: static
-      target_static: http://localhost:5000
+      target_static: http://localhost:5000  # change it to https://<your.host.or.ip>:8443 if needed
 
   - model: authentik_flows.flowstagebinding
     state: present
@@ -84,6 +84,13 @@ entries:
       sub_mode: hashed_user_id
       include_claims_in_id_token: true
       redirect_uris:
+        # change to https://<your.host.or.ip>:8443 if needed
+        - matching_mode: regex
+          url: https://localhost:8443/.*
+        - matching_mode: strict
+          url: https://localhost:8443
+        - matching_mode: strict
+          url: https://localhost:8443/
         - matching_mode: regex
           url: http://localhost:3000/.*
         - matching_mode: strict

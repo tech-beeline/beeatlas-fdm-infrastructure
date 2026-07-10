@@ -324,6 +324,26 @@ podman restart authentik-worker
 
 > **Важно:** перезапуск `authentik-server` **не переприменяет** blueprint — нужен именно **`authentik-worker`**.
 
+
+### настройка на другой hostname
+
+Для возможности подключения с удаленного хоста необходимо изменить конфигурацию SSL:
+
+* закоментировать серкию profile сервиса ingress в docker-compose.yml  либо явно запустить этот сервис
+
+* указать FLAG_AUTHENTIK_URL: https://<IP_OR_HOST>:9443 , где <IP_OR_HOST> соответствуют ноде docker. Внимание! Важна схема https.
+
+* отредактировать секции redirect_uris и target_static в файле authentik-blueprints/fdm-minimal.yaml, поменяв схему http на https, а порт на 8443. См. примеры в комментариях в файле
+
+* Пересоздать сервисы ingress authentic-server и beeatlas-frontend: 
+
+```bash
+docker compose down authentic-server
+docker compose down beeatlas-frontend
+docker compose down ingress
+docker-compose up -d
+```
+
 ### Устранение неполадок
 
 | Симптом | Причина | Решение |
