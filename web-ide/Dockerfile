@@ -20,7 +20,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl -fsSL https://code-server.dev/install.sh | sh
+# use raw.githubusercontent instead of unstable https://code-server.dev/install.sh
+RUN curl -fsSL https://raw.githubusercontent.com/cdr/code-server/main/install.sh | sh
 
 ARG USERNAME=vscode
 ARG USER_UID=1000
