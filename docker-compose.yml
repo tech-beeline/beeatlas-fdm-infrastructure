@@ -306,8 +306,10 @@ services:
       FLAG_IS_PROD: "false"
       FLAG_IS_DEMO_STAND: "true"
       FLAG_API_URL: ""
-      FLAG_AUTHENTIK_URL: https://localhost:9443
-      # FLAG_AUTHENTIK_URL:  https://<your.ip.or.hostname>:9443
+      FLAG_AUTHENTIK_URL: http://localhost:5000
+      # FLAG_AUTHENTIK_URL: https://external.host:9443
+      # replase FLAG_AUTHENTIK_URL to https://<your.ip.or.hostname>:9443 in case of non-local development (external DNS or ip)
+      # because authentication libs do not allow http schema for non-localhost locations by default 
       FLAG_AUTHENTIK_CLIENT_ID: SxbmzvcDJHqs415xgqo8hPQh6CtHvop5jFGF1Wb2
       FLAG_DOC_SERVICE_URL: http://localhost:8097
       FLAG_WEBIDE_URL: http://localhost:8088
@@ -491,8 +493,9 @@ services:
     tty: true
     container_name: structurizr-backend
     environment:
-      URL_ONPREMISES_WORKSPACE: http://on-premises:8080/api/workspace
-      URL_ONPREMISES_BASE: http://on-premises:8080/api
+      # on-premises external endpoint - 'localhost:8087'; change it to <your ip or dhs name>:8087 or real URL
+      URL_ONPREMISES_WORKSPACE: http://localhost:8087/api/workspace
+      URL_ONPREMISES_BASE: http://localhost:8087/api
       ONPREMISES_PASSWORD: password
       URL_VEGA: https://vega.vimpelcom.ru
       URL_DOCUMENTS: http://document-service:8080

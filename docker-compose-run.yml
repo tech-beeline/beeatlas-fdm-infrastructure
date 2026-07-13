@@ -472,8 +472,9 @@ services:
     tty: true
     container_name: structurizr-backend
     environment:
-      URL_ONPREMISES_WORKSPACE: http://on-premises:8080/api/workspace
-      URL_ONPREMISES_BASE: http://on-premises:8080/api
+      # on-premises external endpoint - 'localhost:8087'; change it to <your ip or dhs name>:8087 or real URL
+      URL_ONPREMISES_WORKSPACE: http://localhost:8087/api/workspace
+      URL_ONPREMISES_BASE: http://localhost:8087/api
       ONPREMISES_PASSWORD: password
       URL_VEGA: https://vega.vimpelcom.ru
       URL_DOCUMENTS: http://document-service:8080
