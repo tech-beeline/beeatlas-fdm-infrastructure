@@ -277,7 +277,7 @@ services:
     environment:
       JWKS: "jwks"
       SPRING_PROFILES_ACTIVE: local
-      CORS_ENABLED: 'true'
+      CORS_ENABLED: 'false'
       DEMO_AUTH: 'true'
       AUTHENTIC_AUTH: 'false'
       QUEUE_USER_DROP_CACHE_NAME: user_drop_cache
@@ -475,9 +475,12 @@ services:
     tty: true
     container_name: structurizr-backend
     environment:
-      # on-premises external endpoint - 'localhost:8087'; change it to <your ip or dhs name>:8087 or real URL
-      URL_ONPREMISES_WORKSPACE: http://localhost:8087/api/workspace
-      URL_ONPREMISES_BASE: http://localhost:8087/api
+      URL_ONPREMISES_WORKSPACE: http://on-premises:8080/api/workspace
+      # URL_ONPREMISES_WORKSPACE: http://<your exterrnal ip:8087>/api/workspace
+      # Set it to real external ip: port 8087 is set in in this file, but you should
+      # change it to your external structurizr url; It is used on creation workspaces
+      URL_ONPREMISES_BASE: http://on-premises:8080/api
+      # URL_ONPREMISES_BASE: http://<your exterrnal ip:8087>/api  # same thing
       ONPREMISES_PASSWORD: password
       URL_VEGA: https://vega.vimpelcom.ru
       URL_DOCUMENTS: http://document-service:8080
