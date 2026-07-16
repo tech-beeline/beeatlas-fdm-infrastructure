@@ -2,7 +2,7 @@
 services:
   ingress:
     build:
-      context: .
+      context: ./ingress
       dockerfile: Dockerfile
     container_name: ingress
     restart: unless-stopped
