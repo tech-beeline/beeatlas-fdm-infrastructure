@@ -1,0 +1,24 @@
+CREATE SCHEMA IF NOT EXISTS product;
+CREATE SCHEMA IF NOT EXISTS capability;
+CREATE SCHEMA IF NOT EXISTS user_auth;
+CREATE SCHEMA IF NOT EXISTS techradar;
+CREATE SCHEMA IF NOT EXISTS pack_loader;
+CREATE SCHEMA IF NOT EXISTS entity_events;
+CREATE SCHEMA IF NOT EXISTS processes;
+CREATE SCHEMA IF NOT EXISTS cx;
+CREATE SCHEMA IF NOT EXISTS notification;
+CREATE SCHEMA IF NOT EXISTS documents;
+CREATE SCHEMA IF NOT EXISTS ff;
+CREATE SCHEMA IF NOT EXISTS staging;
+CREATE SCHEMA IF NOT EXISTS staging_camunda;
+
+CREATE TABLE IF NOT EXISTS public.v_fdm_gitlab_languages (
+    cmdb_code       VARCHAR(255) PRIMARY KEY,
+    proj_lang       VARCHAR(255),
+    extraction_date DATE
+);
+
+DO $$
+BEGIN
+    RAISE NOTICE 'Schemas created successfully';
+END $$;

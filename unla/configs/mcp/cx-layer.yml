@@ -1,0 +1,410 @@
+name: FDM Business CX Layer
+tenant: default
+routers:
+  - server: fdm-cx
+    prefix: /gateway/fdm/cx
+    cors:
+      allowOrigins:
+        - '*'
+      allowMethods:
+        - GET
+        - POST
+        - OPTIONS
+      allowHeaders:
+        - Content-Type
+        - Authorization
+        - Mcp-Session-Id
+        - mcp-protocol-version
+      exposeHeaders:
+        - Mcp-Session-Id
+        - mcp-protocol-version
+      allowCredentials: true
+servers:
+  - name: fdm-cx
+    description: >-
+      ArchiMate Business Layer — Customer Experience (cx-backend). Customer
+      Journey (CJ): карты клиентского пути продукта, шаги CJ, связи CJ с
+      Business Interaction. Библиотека Business Interaction (BI): сценарии
+      взаимодействия, поиск и фильтрация, справочники (участники, каналы,
+      чувства, статусы), алерты по CJ. Используй этот MCP для вопросов про
+      клиентский опыт, CJ/BI и шаги journey — не для business/tech capability и
+      не для продуктовой архитектуры.
+    allowedTools:
+      - cx_getBIByCJStep
+      - cx_getCJSteps
+      - cx_getBI
+      - cx_getCJStepById
+      - cx_getBIById
+      - cx_listCJv2
+      - cx_getCJById
+      - cx_getBIByIdV2
+      - cx_getBIParticipants
+      - cx_getBIFeelings
+      - cx_getBIChannels
+      - cx_getBIStatus
+      - cx_listCJ
+      - cx_getCJsByBiId
+      - cx_getBIByFilter
+      - cx_getEditabilityDtoBI
+      - cx_getCjAlerts
+      - cx_getCjLinkedToE2e
+    config:
+      url: http://gateway:8080
+tools:
+  - name: cx_getBIByCJStep
+    description: BI по шагу CJ Возвращает список BI, привязанных к шагу CJ по id шага.
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/product/cj/step/{{.Args.id}}/bi'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: ID шага Customer Journey (CJ Step).
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getCJSteps
+    description: Список шагов CJ Возвращает коллекцию шагов CJ по id CJ.
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/product/cj/{{.Args.id}}/step'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: ID Customer Journey (CJ).
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getBI
+    description: >-
+      Получение BI по продукту Возвращает бизнес-сценарии (BI). Если
+      `id_product` не задан — возвращаются BI без фильтра по продукту.
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/cx/api/cx/v1/library/business-interactions?id_product={{.Args.id_product}}
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id_product
+        position: query
+        required: false
+        type: integer
+        description: Фильтр по ID продукта.
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getCJStepById
+    description: Шаг CJ по id Возвращает шаг CJ (расширенное представление) по id шага.
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/product/cj/step/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: ID шага Customer Journey (CJ Step).
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getBIById
+    description: Получение BI по id Возвращает BI (v1 DTO) по идентификатору.
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/library/business-interactions/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: ID Business Interaction (BI).
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_listCJv2
+    description: >-
+      Список кратких CJ (API v2). Фильтры: product-id, sample (ALL/PUBLIC/DRAFT),
+      search по имени. В ответе карточки CJ: id, name, productId, draft, tags,
+      dashboardLink, uniqueIdent, bpmn, даты — без шагов и BI.
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/cx/api/cx/v2/product/cj?product-id={{.Args.product_id}}&sample={{.Args.sample}}&search={{.Args.search}}
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: product_id
+        position: query
+        required: false
+        type: integer
+        description: Фильтр по ID продукта (query-параметр `product-id`).
+        default: ''
+        items:
+          type: int64
+      - name: sample
+        position: query
+        required: false
+        type: string
+        description: 'Режим выборки. Возможные значения: ALL, PUBLIC, DRAFT.'
+        default: ALL
+        items:
+          type: ''
+      - name: search
+        position: query
+        required: false
+        type: string
+        description: Поиск по имени (подстрока).
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getCJById
+    description: >-
+      Получение одной полной CJ по id (API v2). Возвращает CJ с шагами, BI,
+      владельцами, ссылками и тегами.
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v2/product/cj/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: ID Customer Journey (CJ).
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getBIByIdV2
+    description: >-
+      Получение BI по id (v2) Возвращает расширенный BI (v2 DTO) по
+      идентификатору.
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v2/library/business-interactions/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: ID Business Interaction (BI).
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getBIParticipants
+    description: 'Справочник BI: участники Возвращает справочник участников BI.'
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/references/participants'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getBIFeelings
+    description: 'Справочник BI: чувства Возвращает справочник чувств для карточки BI.'
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/references/feelings'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getBIChannels
+    description: 'Справочник BI: каналы Возвращает справочник каналов BI.'
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/references/channels'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getBIStatus
+    description: 'Справочник BI: статусы Возвращает справочник статусов BI.'
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/references/bi_status'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_listCJ
+    description: >-
+      Список кратких CJ (API v1). Фильтры: idProduct, sample (ALL/PUBLIC/DRAFT),
+      search по имени. Учитывает доступные пользователю продукты. В ответе
+      карточки CJ: id, name, id_product, draft, author/owners (id), uniqueIdent,
+      bpmn, даты — без шагов и BI.
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/cx/api/cx/v1/product/cj?idProduct={{.Args.idProduct}}&sample={{.Args.sample}}&search={{.Args.search}}
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: idProduct
+        position: query
+        required: false
+        type: integer
+        description: Фильтр по ID продукта (внешний идентификатор продукта).
+        default: ''
+        items:
+          type: int64
+      - name: sample
+        position: query
+        required: false
+        type: string
+        description: 'Режим выборки. Возможные значения: ALL, PUBLIC, DRAFT.'
+        default: ALL
+        items:
+          type: ''
+      - name: search
+        position: query
+        required: false
+        type: string
+        description: Поиск по имени (подстрока).
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getCJsByBiId
+    description: CJ по BI Возвращает список CJ, в которых используется BI по id BI.
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/product/cj/step/bi/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: ID Business Interaction (BI).
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getBIByFilter
+    description: >-
+      Поиск BI по фильтру Фильтрация по тексту, продукту, статусу и признаку
+      черновика. Параметры можно комбинировать.
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/cx/api/cx/v1/library/business-interactions/find?text={{.Args.text}}&id_product={{.Args.id_product}}&id_status={{.Args.id_status}}&draft={{.Args.draft}}
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: text
+        position: query
+        required: false
+        type: string
+        description: Текст для поиска (по названию/номеру BI).
+        default: ''
+        items:
+          type: ''
+      - name: id_product
+        position: query
+        required: false
+        type: integer
+        description: Фильтр по ID продукта.
+        default: ''
+        items:
+          type: int64
+      - name: id_status
+        position: query
+        required: false
+        type: integer
+        description: Фильтр по ID статуса BI.
+        default: ''
+        items:
+          type: int64
+      - name: draft
+        position: query
+        required: false
+        type: boolean
+        description: Фильтр по признаку черновика.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getEditabilityDtoBI
+    description: >-
+      Проверка редактируемости BI Возвращает признак возможности редактирования
+      BI для текущего пользователя/контекста.
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/cx/api/cx/v1/library/business-interactions/editability/{{.Args.id}}
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: ID Business Interaction (BI).
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getCjAlerts
+    description: >-
+      CJ алерты Возвращает список CJ с BI и шагами BI для сценариев
+      алертинга/мониторинга. Заголовки не требуются (исключение в
+      HeaderInterceptor).
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/cj/alerts'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: cx_getCjLinkedToE2e
+    description: >-
+      CJ, связанные с e2e. Дерево CJ → BI → bi_steps для Customer Journey,
+      связанных с e2e из fdm-products через bi_step.uid = e2e.bi_step_code.
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/cj/e2e'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+prompts: []
+mcpServers: []
+createdAt: '2026-06-19T11:22:43.504063145Z'
+updatedAt: '2026-07-31T14:42:00.000000000Z'

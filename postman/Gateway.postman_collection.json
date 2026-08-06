@@ -1,0 +1,1734 @@
+{
+  "info": {
+    "_postman_id": "c9021c14-6d03-4bd8-8bd4-62e94bab0489",
+    "name": "Gateway",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "31831837"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Permissions",
+          "item": [
+            {
+              "name": "get permissions",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL}}/api-gateway/auth/v1/permissions",
+                  "host": [
+                    "{{URL}}"
+                  ],
+                  "path": [
+                    "api-gateway",
+                    "auth",
+                    "v1",
+                    "permissions"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Role",
+          "item": [
+            {
+              "name": "get roles",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL}}/api-gateway/auth/v1/roles",
+                  "host": [
+                    "{{URL}}"
+                  ],
+                  "path": [
+                    "api-gateway",
+                    "auth",
+                    "v1",
+                    "roles"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "create role",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"name\": \"133323123123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{URL}}/api-gateway/auth/v1/roles",
+                  "host": [
+                    "{{URL}}"
+                  ],
+                  "path": [
+                    "api-gateway",
+                    "auth",
+                    "v1",
+                    "roles"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "edit role",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"id\": 10,\r\n    \"name\": \"12345\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{URL}}/api-gateway/auth/v1/roles",
+                  "host": [
+                    "{{URL}}"
+                  ],
+                  "path": [
+                    "api-gateway",
+                    "auth",
+                    "v1",
+                    "roles"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get role",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL}}/api-gateway/auth/v1/roles/:id",
+                  "host": [
+                    "{{URL}}"
+                  ],
+                  "path": [
+                    "api-gateway",
+                    "auth",
+                    "v1",
+                    "roles",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "6"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete role",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{URL}}/api-gateway/auth/v1/roles/:id",
+                  "host": [
+                    "{{URL}}"
+                  ],
+                  "path": [
+                    "api-gateway",
+                    "auth",
+                    "v1",
+                    "roles",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get role permissions",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL}}/api-gateway/auth/v1/roles/:id/permissions",
+                  "host": [
+                    "{{URL}}"
+                  ],
+                  "path": [
+                    "api-gateway",
+                    "auth",
+                    "v1",
+                    "roles",
+                    ":id",
+                    "permissions"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "6"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "edit role permissions",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\r\n    {\r\n        \"id\": 1\r\n    }\r\n]",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{URL}}/api-gateway/auth/v1/roles/:id/permissions",
+                  "host": [
+                    "{{URL}}"
+                  ],
+                  "path": [
+                    "api-gateway",
+                    "auth",
+                    "v1",
+                    "roles",
+                    ":id",
+                    "permissions"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "User",
+          "item": [
+            {
+              "name": "get users",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL}}/api-gateway/auth/v1/user",
+                  "host": [
+                    "{{URL}}"
+                  ],
+                  "path": [
+                    "api-gateway",
+                    "auth",
+                    "v1",
+                    "user"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get user exist",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL}}/api-gateway/auth/v1/user/:id/existence",
+                  "host": [
+                    "{{URL}}"
+                  ],
+                  "path": [
+                    "api-gateway",
+                    "auth",
+                    "v1",
+                    "user",
+                    ":id",
+                    "existence"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get user by login",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{PROD}}/api-gateway/auth/v1/user/:login",
+                  "host": [
+                    "{{PROD}}"
+                  ],
+                  "path": [
+                    "api-gateway",
+                    "auth",
+                    "v1",
+                    "user",
+                    ":login"
+                  ],
+                  "variable": [
+                    {
+                      "key": "login",
+                      "value": "APochechura"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get user permissions",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL}}/api-gateway/auth/v1/user/:login/permissions",
+                  "host": [
+                    "{{URL}}"
+                  ],
+                  "path": [
+                    "api-gateway",
+                    "auth",
+                    "v1",
+                    "user",
+                    ":login",
+                    "permissions"
+                  ],
+                  "variable": [
+                    {
+                      "key": "login",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get user roles",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL}}/api-gateway/auth/v1/user/:login/roles",
+                  "host": [
+                    "{{URL}}"
+                  ],
+                  "path": [
+                    "api-gateway",
+                    "auth",
+                    "v1",
+                    "user",
+                    ":login",
+                    "roles"
+                  ],
+                  "variable": [
+                    {
+                      "key": "login",
+                      "value": "mfvcfmmv9a"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "edit profile roles",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\r\n  {\r\n    \"id\": 1\r\n  }\r\n]",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{URL}}/api-gateway/auth/v1/user/:login/roles",
+                  "host": [
+                    "{{URL}}"
+                  ],
+                  "path": [
+                    "api-gateway",
+                    "auth",
+                    "v1",
+                    "user",
+                    ":login",
+                    "roles"
+                  ],
+                  "variable": [
+                    {
+                      "key": "login",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "find profile",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL}}/api-gateway/auth/v1/user/find",
+                  "host": [
+                    "{{URL}}"
+                  ],
+                  "path": [
+                    "api-gateway",
+                    "auth",
+                    "v1",
+                    "user",
+                    "find"
+                  ],
+                  "query": [
+                    {
+                      "key": "filter",
+                      "value": "",
+                      "description": "Фильтр по полю",
+                      "disabled": true
+                    },
+                    {
+                      "key": "text",
+                      "value": "",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get user info Copy",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL}}/api-gateway/auth/v1/user/:login/info?email=TTestovppp@beeline.ru&fullName=Test&idExt=23233333",
+                  "host": [
+                    "{{URL}}"
+                  ],
+                  "path": [
+                    "api-gateway",
+                    "auth",
+                    "v1",
+                    "user",
+                    ":login",
+                    "info"
+                  ],
+                  "query": [
+                    {
+                      "key": "email",
+                      "value": "TTestovppp@beeline.ru"
+                    },
+                    {
+                      "key": "fullName",
+                      "value": "Test"
+                    },
+                    {
+                      "key": "idExt",
+                      "value": "23233333"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "key": "login",
+                      "value": "TTestovppp"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Product",
+          "item": [
+            {
+              "name": "get products",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL}}/api-gateway/auth/v1/user/:id/product",
+                  "host": [
+                    "{{URL}}"
+                  ],
+                  "path": [
+                    "api-gateway",
+                    "auth",
+                    "v1",
+                    "user",
+                    ":id",
+                    "product"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Techradar",
+      "item": [
+        {
+          "name": "all tech",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api-gateway/techradar/v1/tech",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "techradar",
+                "v1",
+                "tech"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "all category",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "user-id",
+                "value": "1",
+                "disabled": true
+              },
+              {
+                "key": "user-products-ids",
+                "value": "[1]",
+                "disabled": true
+              },
+              {
+                "key": "user-roles",
+                "value": "[\"DEFAULT\",\"ADMINISTRATOR\"]",
+                "disabled": true
+              },
+              {
+                "key": "user-permission",
+                "value": "[\"DESIGN_ARTIFACT\",\"CREATE_ARTIFACT\",\"EDIT_ARTIFACT\",\"DELETE_ARTIFACT\"]",
+                "disabled": true
+              }
+            ],
+            "url": {
+              "raw": "{{URL}}/api-gateway/techradar/v1/category",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "techradar",
+                "v1",
+                "category"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "category/tech",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api-gateway/techradar/v1/category/tech?id_category=",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "techradar",
+                "v1",
+                "category",
+                "tech"
+              ],
+              "query": [
+                {
+                  "key": "id_category",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "tech",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "user-id",
+                "value": "1",
+                "disabled": true
+              },
+              {
+                "key": "user-products-ids",
+                "value": "[1]",
+                "disabled": true
+              },
+              {
+                "key": "user-roles",
+                "value": "[\"DEFAULT\",\"ADMINISTRATOR\"]",
+                "disabled": true
+              },
+              {
+                "key": "user-permission",
+                "value": "[\"DESIGN_ARTIFACT\",\"CREATE_ARTIFACT\",\"EDIT_ARTIFACT\",\"DELETE_ARTIFACT\"]",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\r\n  {\r\n    \"categories\": [\r\n      {\r\n        \"id\": 2\r\n      }\r\n    ],\r\n    \"descr\": \"string\",\r\n    \"label\": \"werwerwerwe\",\r\n    \"link\": \"string\",\r\n    \"ring_id\": 2,\r\n    \"sector_id\": 1\r\n  },\r\n  {\r\n    \"categories\": [\r\n      {\r\n        \"id\": 2\r\n      }\r\n    ],\r\n    \"descr\": \"string\",\r\n    \"label\": \"rwewerwerwrwerer\",\r\n    \"link\": \"string\",\r\n    \"ring_id\": 2,\r\n    \"sector_id\": 1\r\n  }\r\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api-gateway/techradar/v1/tech",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "techradar",
+                "v1",
+                "tech"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "tech",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "user-id",
+                "value": "1"
+              },
+              {
+                "key": "user-products-ids",
+                "value": "[1]"
+              },
+              {
+                "key": "user-roles",
+                "value": "[\"DEFAULT\",\"ADMINISTRATOR\"]"
+              },
+              {
+                "key": "user-permission",
+                "value": "[\"DESIGN_ARTIFACT\",\"CREATE_ARTIFACT\",\"EDIT_ARTIFACT\",\"DELETE_ARTIFACT\"]"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\r\n    {\r\n        \"categories\": [\r\n            {\r\n                \"id\": 122\r\n            },\r\n            {\r\n                \"id\": 126\r\n            },\r\n            {\r\n                \"id\": 127\r\n            },\r\n            {\r\n                \"id\": 128\r\n            },\r\n            {\r\n                \"id\": 128\r\n            }\r\n        ],\r\n        \"descr\": \"string\",\r\n        \"id\": 205,\r\n        \"label\": \"dfsdfssdfsdfsdfsdfsdfdfsdf\",\r\n        \"link\": \"string\",\r\n        \"ring_id\": 2,\r\n        \"sector_id\": 3\r\n    }\r\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api-gateway/techradar/v1/tech",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "techradar",
+                "v1",
+                "tech"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "tech",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api-gateway/techradar/v1/tech/:id",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "techradar",
+                "v1",
+                "tech",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "15"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "user-id",
+                "value": "1",
+                "disabled": true
+              },
+              {
+                "key": "user-products-ids",
+                "value": "[1]",
+                "disabled": true
+              },
+              {
+                "key": "user-roles",
+                "value": "[\"DEFAULT\",\"ADMINISTRATOR\"]",
+                "disabled": true
+              },
+              {
+                "key": "user-permission",
+                "value": "[\"DESIGN_ARTIFACT\",\"CREATE_ARTIFACT\",\"EDIT_ARTIFACT\",\"DELETE_ARTIFACT\"]",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"122\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api-gateway/techradar/v1/category",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "techradar",
+                "v1",
+                "category"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/category/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api-gateway/techradar/v1/category/:id",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "techradar",
+                "v1",
+                "category",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "011"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "category/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"новая категорияwefasdfasdfasdfasdf\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api-gateway/techradar/v1/category/:id",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "techradar",
+                "v1",
+                "category",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/category/join",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"joinCategoryName\": \"ваыквапрц45к6р34грыкепрыапр\",\r\n  \"joinedCategoriesId\": [\r\n    130,\r\n    131,\r\n    132\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api-gateway/techradar/v1/category/join",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "techradar",
+                "v1",
+                "category",
+                "join"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/tech/subscribed",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api-gateway/techradar/v1/tech/subscribed",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "techradar",
+                "v1",
+                "tech",
+                "subscribed"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "New Request",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"versionStart\": \"135\",\r\n    \"versionEnd\": \"1999\",\r\n    \"statusId\": 2\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api-gateway/techradar/v1/tech/:id_tech/version/:id_version",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "techradar",
+                "v1",
+                "tech",
+                ":id_tech",
+                "version",
+                ":id_version"
+              ],
+              "variable": [
+                {
+                  "key": "id_tech",
+                  "value": "55"
+                },
+                {
+                  "key": "id_version",
+                  "value": "41"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "New Request",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "[\r\n  {\r\n   \"versionStart\": \"11\",\r\n    \"versionEnd\": \"12\",\r\n    \"statusId\": 1\r\n  }\r\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api-gateway/techradar/v1/tech/:id_tech/version",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "techradar",
+                "v1",
+                "tech",
+                ":id_tech",
+                "version"
+              ],
+              "variable": [
+                {
+                  "key": "id_tech",
+                  "value": "55"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "New Request Copy",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "[\r\n  {\r\n   \"versionStart\": \"11\",\r\n    \"versionEnd\": \"12\",\r\n    \"statusId\": 1\r\n  }\r\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api-gateway/techradar/v1/tech/:id_tech/version",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "techradar",
+                "v1",
+                "tech",
+                ":id_tech",
+                "version"
+              ],
+              "variable": [
+                {
+                  "key": "id_tech",
+                  "value": "55"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Capability",
+      "item": [
+        {
+          "name": "/business",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{PROD}}/api-gateway/capability/v1/business",
+              "host": [
+                "{{PROD}}"
+              ],
+              "path": [
+                "api-gateway",
+                "capability",
+                "v1",
+                "business"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/business/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api-gateway/capability/v1/business/:id",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "capability",
+                "v1",
+                "business",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "10273"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/business/{id}/children",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api-gateway/capability/v1/business/:id/children",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "capability",
+                "v1",
+                "business",
+                ":id",
+                "children"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "987"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/business/{id}/parents",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api-gateway/capability/v1/business/:id/parents",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "capability",
+                "v1",
+                "business",
+                ":id",
+                "parents"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "987"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/tech/{id}/parents",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api-gateway/capability/v1/tech/:id/parents",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "capability",
+                "v1",
+                "tech",
+                ":id",
+                "parents"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "2112"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/tech/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api-gateway/capability/v1/tech/:id",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "capability",
+                "v1",
+                "tech",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "2112"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/tech",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api-gateway/capability/v1/tech",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "capability",
+                "v1",
+                "tech"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/search",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api-gateway/capability/v1/search?findBy=CORE",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "capability",
+                "v1",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "findBy",
+                  "value": "CORE"
+                },
+                {
+                  "key": "search",
+                  "value": "Управление складами",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/business",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"code\": \"BC.19092024\",\r\n    \"name\": \"Тест\",\r\n    \"description\": \"тестим ссылки  1.  <a href=\\\"https://test.ru\\\">ссылка</a> 2.  <a href=\\\"https://test.ru\\\"><font color=\\\"#0000ff\\\">https://test.ru</font></a> 3. <font color=\\\"#0000ff\\\">https://test.ru</font>  4.  <a href=\\\"https://test.ru\\\">https://test.ru</a>  5. https://test.ru   6.   <a href=\\\"https://test.ru\\\">ссылка</a>  \",\r\n    \"status\": \"string\",\r\n    \"author\": \"string\",\r\n    \"link\": \"string\",\r\n    \"owner\": \"string\",\r\n    \"isDomain\": true,\r\n    \"parent\": \"GRP.000\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api-gateway/capability/v1/business",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "capability",
+                "v1",
+                "business"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/packages",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api-gateway/pack-loader/v1/packages",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "pack-loader",
+                "v1",
+                "packages"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/package/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api-gateway/pack-loader/v1/package/:id",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "pack-loader",
+                "v1",
+                "package",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "238"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/tech/{code} (no reg)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"code\": \"TC-SAMPLE-CODE\",\r\n  \"name\": \"Тестовая ТС\",\r\n  \"description\": \"Это описание тестовой ТС\",\r\n  \"parents\": [\r\n    \"BC-000137\",\r\n    \"BC-000135\"\r\n  ],\r\n  \"targetSystemCode\": \"FDMSHOWCASEAPP\",\r\n  \"version\": \"0.1\",\r\n  \"goal_from\": \"24Q3\",\r\n  \"goal_to\": \"25Q4\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api-gateway/capability/v2/tech/:code",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "capability",
+                "v2",
+                "tech",
+                ":code"
+              ],
+              "variable": [
+                {
+                  "key": "code",
+                  "value": "TEST"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "capabilities-subscribed",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api-gateway/capability/v1/capabilities-subscribed?entity-type=TECH_CAPABILITY",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "capability",
+                "v1",
+                "capabilities-subscribed"
+              ],
+              "query": [
+                {
+                  "key": "entity-type",
+                  "value": "TECH_CAPABILITY"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "capabilities/criterias",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "tree",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api-gateway/capability/v1/business/tree",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api-gateway",
+                "capability",
+                "v1",
+                "business",
+                "tree"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "tree/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "New Request",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "New Request",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Пример объекта\",\r\n    \"description\": \"Пример описания объекта\",\r\n    \"owner\": \"Иванов И.И.\",\r\n    \"parentId\": 163,\r\n    \"comment\": \"Пример комментария\"\r\n    }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{PROD}}/api-gateway/capability/v1/business/order",
+              "host": [
+                "{{PROD}}"
+              ],
+              "path": [
+                "api-gateway",
+                "capability",
+                "v1",
+                "business",
+                "order"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "New Request",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "New Request",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Пример объекта\",\r\n    \"description\": \"Пример описания объекта\",\r\n    \"owner\": \"Иванов И.И.\",\r\n    \"parentId\": 163,\r\n    \"comment\": \"Пример комментария\"\r\n    }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{PROD}}/api-gateway/capability/v1/business/order/:id",
+              "host": [
+                "{{PROD}}"
+              ],
+              "path": [
+                "api-gateway",
+                "capability",
+                "v1",
+                "business",
+                "order",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "6"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Product",
+      "item": [
+        {
+          "name": "/tech/{tech_id}/product",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/user/product",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{PROD}}/api-gateway/product/v1/user/product",
+              "host": [
+                "{{PROD}}"
+              ],
+              "path": [
+                "api-gateway",
+                "product",
+                "v1",
+                "user",
+                "product"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "New Request",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{PROD}}/api-gateway/product/v1/user/product/admin",
+              "host": [
+                "{{PROD}}"
+              ],
+              "path": [
+                "api-gateway",
+                "product",
+                "v1",
+                "user",
+                "product",
+                "admin"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "structurizr",
+      "item": [
+        {
+          "name": "New Request",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "get public key",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{URL}}/api/runtime/v1/eauthkey",
+          "host": [
+            "{{URL}}"
+          ],
+          "path": [
+            "api",
+            "runtime",
+            "v1",
+            "eauthkey"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/cache/{login}",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{URL}}/cache",
+          "host": [
+            "{{URL}}"
+          ],
+          "path": [
+            "cache"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/login/info",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{PROD}}/api-gateway/auth/v1/user/login/info",
+          "host": [
+            "{{PROD}}"
+          ],
+          "path": [
+            "api-gateway",
+            "auth",
+            "v1",
+            "user",
+            "login",
+            "info"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "New Request",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "New Request",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "New Request",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "New Request",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "New Request",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "3ZXVmRRZ29LNFIdIn1uUCz1uRRwQw5Bx3JL2X8QpA",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "LOCAL",
+      "value": "http://localhost:8080"
+    }
+  ]
+}

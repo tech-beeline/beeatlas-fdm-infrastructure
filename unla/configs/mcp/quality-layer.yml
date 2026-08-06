@@ -1,0 +1,349 @@
+name: FDM Application Quality Layer
+tenant: default
+routers:
+  - server: fdm-application-quality
+    prefix: /gateway/fdm/application/quality
+    cors:
+      allowOrigins:
+        - '*'
+      allowMethods:
+        - GET
+        - POST
+        - OPTIONS
+      allowHeaders:
+        - Content-Type
+        - Authorization
+        - Mcp-Session-Id
+        - mcp-protocol-version
+      exposeHeaders:
+        - Mcp-Session-Id
+        - mcp-protocol-version
+      allowCredentials: true
+servers:
+  - name: fdm-application-quality
+    description: >-
+      ArchiMate Application Layer — требования и качество (fdm-products). NFR
+      (нефункциональные требования), жизненные ситуации (chapter), паттерны
+      Techradar у продукта, фитнес-функции и метрики дашборда. Используй для
+      оценки качества, требований и паттернов — не для контейнеров, интерфейсов
+      и каталога продуктов.
+    allowedTools:
+      - getAllFitnessFunctions
+      - getAllNfr
+      - getChapterPatterns
+      - getChaptersWithNfr
+      - getFitnessFunctionsByProduct
+      - getFitnessFunctionsAggregation
+      - getNfrById
+      - getNfrByPatternId
+      - getProductsByRequirementId
+      - getRequirementVersionsByCoreId
+      - getProductNfr
+      - getProductPatterns
+      - getSourceMetrics
+      - getPatternIdsByProduct
+    config:
+      url: http://gateway:8080
+tools:
+  - name: getAllFitnessFunctions
+    description: >-
+      Полный справочник фитнес-функций (фф). Все записи фф из каталога с кодами,
+      статусами и ссылками на документацию.
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/ff'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getAllNfr
+    description: Получить все актуальные версии NFR (без дублей по core_id)
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/nfr'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getChapterPatterns
+    description: >-
+      Идентификаторы паттернов для главы (chapter). Список pattern_id из
+      Techradar, связанных с жизненной ситуацией.
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/chapter/{{.Args.id}}/patterns'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор главы
+        default: ''
+        items:
+          type: int32
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getChaptersWithNfr
+    description: >-
+      Получить жизненные ситуации по NFR: дерево/список chapters, связанных с
+      нефункциональными требованиями.
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/chapter'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getFitnessFunctionsByProduct
+    description: Получить результаты фитнес-функций по продукту
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.alias}}/fitness-function'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: alias
+        position: path
+        required: true
+        type: string
+        description: Alias продукта
+        default: ''
+        items:
+          type: ''
+      - name: source_id
+        position: query
+        required: false
+        type: integer
+        description: ID источника оценки
+        default: ''
+        items:
+          type: ''
+      - name: source_type
+        position: query
+        required: false
+        type: string
+        description: Тип источника оценки
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getFitnessFunctionsAggregation
+    description: >-
+      Агрегированные результаты фитнес-функций для дашборда (сводная статистика
+      по оценкам FF без детализации по отдельному продукту)
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/dashboard/fitness-function'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getNfrById
+    description: Получить NFR по id (конкретную версию)
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/nfr/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: Идентификатор NFR
+        default: ''
+        items:
+          type: int32
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getNfrByPatternId
+    description: Список NFR, связанных с паттерном Techradar
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/requirement/pattern/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: Идентификатор паттерна
+        default: ''
+        items:
+          type: int32
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductsByRequirementId
+    description: >-
+      Продукты, которым назначена версия требования NFR. filter: all (по
+      умолчанию), auto (Beeatlas), hand (ручное назначение).
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/requirement/{{.Args.id}}/products'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: string
+        description: Идентификатор версии требования
+        default: ''
+        items:
+          type: ''
+      - name: filter
+        position: query
+        required: false
+        type: string
+        description: 'Фильтр по способу назначения: all | auto | hand'
+        default: all
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getRequirementVersionsByCoreId
+    description: >-
+      История версий требования NFR по core-id. Все версии, отсортированные по
+      номеру версии по возрастанию.
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/requirement/core/{{.Args.core-id}}/versions'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: core-id
+        position: path
+        required: true
+        type: string
+        description: Идентификатор основы требования (core_id)
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductNfr
+    description: Получить все актуальные версии требований NFR, связанные с продуктом
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/nfr/product'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: query
+        required: false
+        type: number
+        description: ''
+        default: ''
+        items:
+          type: int32
+      - name: alias
+        position: query
+        required: false
+        type: string
+        description: ''
+        default: ''
+        items:
+          type: ''
+      - name: api-key
+        position: query
+        required: false
+        type: string
+        description: ''
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductPatterns
+    description: >-
+      Паттерны Techradar, связанные с продуктом (опциональная фильтрация по
+      источнику)
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.alias}}/patterns'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: alias
+        position: path
+        required: false
+        type: string
+        description: Alias продукта
+        default: ''
+        items:
+          type: string
+      - name: source-id
+        position: query
+        required: false
+        type: integer
+        description: Идентификатор источника (опционально)
+        default: ''
+        items:
+          type: int32
+      - name: source-type
+        position: query
+        required: false
+        type: string
+        description: Тип источника (опционально)
+        default: ''
+        items:
+          type: string
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getSourceMetrics
+    description: >-
+      Получить метрики источников. Возвращает агрегированный объект метрик (поля
+      DTO), а не массив отдельных записей.
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/source-metric'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getPatternIdsByProduct
+    description: >-
+      Идентификаторы паттернов по продукту (ровно один из параметров id, alias
+      или api-key обязателен. Пустой массив — если у продукта нет подходящих NFR
+      или паттернов)
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/pattern/product'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: query
+        required: false
+        type: integer
+        description: Числовой ID продукта
+        default: ''
+        items:
+          type: int32
+      - name: alias
+        position: query
+        required: false
+        type: string
+        description: Alias (код) продукта
+        default: ''
+        items:
+          type: string
+      - name: api-key
+        position: query
+        required: false
+        type: string
+        description: API-ключ продукта для идентификации
+        default: ''
+        items:
+          type: string
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+prompts: []
+mcpServers: []
+createdAt: '2026-06-19T11:22:06.62287676Z'
+updatedAt: '2026-07-31T14:29:00.000000000Z'

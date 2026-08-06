@@ -1,0 +1,284 @@
+name: FDM Technology Layer
+tenant: default
+routers:
+  - server: fdm-technology
+    prefix: /gateway/fdm/techradar
+    cors:
+      allowOrigins:
+        - '*'
+      allowMethods:
+        - GET
+        - POST
+        - OPTIONS
+      allowHeaders:
+        - Content-Type
+        - Authorization
+        - Mcp-Session-Id
+        - mcp-protocol-version
+      exposeHeaders:
+        - Mcp-Session-Id
+        - mcp-protocol-version
+      allowCredentials: true
+servers:
+  - name: fdm-technology
+    description: >-
+      ArchiMate Technology Layer — techradar-backend. Реестр технологий
+      TechRadar: каталог технологий и история статусов, категории, секторы,
+      кольца, процессы, связи технологий с продуктами. Паттерны проектирования
+      TechRadar: каталог, группы, дерево групп, auto-check. Используй для
+      технологического радара — не путай с паттернами/NFR продукта
+      (application-quality) и не для business/tech capability (capability).
+    allowedTools:
+      - getAllTech
+      - getTechByIdWithHistory
+      - listProductTechRelations
+      - getlistCategories
+      - getlistTechByCategoryIds
+      - getlistSectors
+      - listRings
+      - listProcesses
+      - allPatterns
+      - getAllTechnologyPatterns
+      - getPatternsAutoCheck
+      - getAllPatternsGroup
+      - getTreePatternsGroup
+      - getPatternsByChapter
+      - getPatternsByIds
+      - getPatternId
+    config:
+      url: http://gateway:8080
+tools:
+  - name: getAllTech
+    description: >-
+      Получить список всех технологий. Возвращает список технологий. При наличии
+      параметра actualTech может фильтровать по актуальности.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/tech'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: actualTech
+        position: query
+        required: false
+        type: boolean
+        description: >-
+          Фильтр по актуальности технологии. Допустимые значения: true/false.
+          Если параметр не передан — возвращаются все технологии.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getTechByIdWithHistory
+    description: >-
+      Получить технологию по ID (с историей статусов). Возвращает технологию и
+      историю изменения её статусов по идентификатору.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/tech/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: >-
+          Идентификатор технологии (целое число). Пример: 123. Если технологии с
+          таким id нет — сервис вернёт 404.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: listProductTechRelations
+    description: >-
+      Получить связи продукт↔технология. Возвращает список продуктов и их связей
+      с технологиями.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/tech/product-tech'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getlistCategories
+    description: Получить список категорий технологий техрадара
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/category'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getlistTechByCategoryIds
+    description: >-
+      Получить технологии по категориям. Возвращает список технологий,
+      относящихся к переданным категориям.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/category/tech'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id_category
+        position: query
+        required: true
+        type: array
+        description: >-
+          Список идентификаторов категорий (массив целых чисел). Пример:
+          id_category=1&id_category=2&id_category=3.
+        default: ''
+        items:
+          type: integer
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getlistSectors
+    description: Получить список секторов. Возвращает все доступные сектора.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/sectors'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: listRings
+    description: Получить список колец. Возвращает все доступные кольца.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/rings'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: listProcesses
+    description: Получить список процессов. Возвращает все процессы.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/processes'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: allPatterns
+    description: Просмотр всех паттернов проектирования.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/patterns'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getAllTechnologyPatterns
+    description: Просмотр всех паттернов связанных с технологией.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/patterns/tech/{{.Args.tech_id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: tech_id
+        position: path
+        required: true
+        type: integer
+        description: 'Идентификатор технологии (целое число). Пример: 123.'
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getPatternsAutoCheck
+    description: >-
+      Просмотр паттернов принятых в компании, для которых есть правило
+      автоматической проверки.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/patterns/auto-check'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getAllPatternsGroup
+    description: Просмотр групп паттернов проектирования.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/pattern/group'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getTreePatternsGroup
+    description: Просмотр дерева групп паттернов проектирования.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/pattern/group/tree'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getPatternsByChapter
+    description: Получить паттерны по главе (chapter) из product.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/pattern/chapter/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: >-
+          Идентификатор главы (chapter) в product (целое число). Пример: 10.
+          Если chapter не найден — 404.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getPatternsByIds
+    description: >-
+      Получить список паттернов по списку id из query (ids через запятую;
+      дубликаты отбрасываются).
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/pattern/by-ids'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: ids
+        position: query
+        required: true
+        type: string
+        description: >-
+          Идентификаторы паттернов одной строкой через запятую. Пример: "1,2,3".
+          Пробелы допустимы, дубликаты будут отброшены. Если строка
+          пустая/невалидная — 400.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getPatternId
+    description: Просмотр паттерна по id.
+    method: GET
+    endpoint: '{{.Config.url}}/techradar/api/v1/pattern/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: 'Идентификатор паттерна (целое число). Пример: 10.'
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+prompts: []
+mcpServers: []
+createdAt: '2026-06-19T11:24:22.687575587Z'
+updatedAt: '2026-06-29T04:47:35.307132552Z'

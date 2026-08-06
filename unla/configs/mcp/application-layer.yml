@@ -1,0 +1,685 @@
+name: FDM Application Product Layer
+tenant: default
+routers:
+  - server: fdm-application-product
+    prefix: /gateway/fdm/application/product
+    cors:
+      allowOrigins:
+        - '*'
+      allowMethods:
+        - GET
+        - POST
+        - OPTIONS
+      allowHeaders:
+        - Content-Type
+        - Authorization
+        - Mcp-Session-Id
+        - mcp-protocol-version
+      exposeHeaders:
+        - Mcp-Session-Id
+        - mcp-protocol-version
+      allowCredentials: true
+servers:
+  - name: fdm-application-product
+    description: >-
+      ArchiMate Application Layer — каталог продуктов (fdm-products). Продукты и
+      CMDB: карточки, alias, доступность, сотрудники, инфраструктура, влияния,
+      E2E-процессы. Архитектурная модель: контейнеры Structurizr, интерфейсы и
+      методы (Mapic/Structurizr), обнаруженные интерфейсы, поиск операций и
+      связей с техническими возможностями. Связи продукт—технология. Используй
+      для состава продукта и прикладной архитектуры — не для NFR, паттернов и
+      фитнес-функций.
+    allowedTools:
+      - getAllMnemonics
+      - getAllProductsAndTechRelations
+      - getAvailableProductsByCode
+      - getContainersFromStructurizr
+      - getContainersByCmdb
+      - getE2eProcessByCmdb
+      - getE2eList
+      - getE2eByCode
+      - getEmployeeByAlias
+      - getFreeAlias
+      - getInfluencesByCmdb
+      - getDiscoveredInterface
+      - getMapicApi
+      - getParent
+      - getProductInfra
+      - getProductInfraContainsName
+      - getProductInteraction
+      - getProductsByIds
+      - getProductsFromMapic
+      - getProductsFromStructurizr
+      - getProductsInfo
+      - getProductsInfoByCode
+      - getProductsWithTech
+      - getProductsByTechId
+      - getImplementedTechCapabilitiesByProductId
+      - getTcByContainerProduct
+      - requestToMapic
+      - searchInfra
+      - search_operationsByPathAndType
+      - search_operationsByTechCapabilityId
+      - search_operationsTreeByTechCapabilityId
+    config:
+      url: http://gateway:8080
+tools:
+  - name: getAllMnemonics
+    description: >-
+      Список мнемоник (alias) всех продуктов. Только строковые идентификаторы
+      (mnemonic/cmdb), без связей с технологиями — не путать с
+      /v1/products/relations/tech.
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/products/mnemonic'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getAllProductsAndTechRelations
+    description: Все продукты со связями на технологии Techradar
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/products/relations/tech'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getAvailableProductsByCode
+    description: Доступность продукта
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.id}}/availability'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: string
+        description: Строковый идентификатор продукта
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getContainersFromStructurizr
+    description: Просмотр контейнеров, их интерфейсов и методов в structurizr
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.cmdb}}/container'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: cmdb
+        position: path
+        required: true
+        type: string
+        description: CMDB-код продукта
+        default: ''
+        items:
+          type: ''
+      - name: show-hidden
+        position: query
+        required: false
+        type: boolean
+        description: ''
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getContainersByCmdb
+    description: 'Контейнеры и интерфейсы Structurizr по CMDB '
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/product/api/v1/product/{{.Args.cmdb}}/container?show-hidden={{.Args.show_hidden}}
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: cmdb
+        position: path
+        required: true
+        type: string
+        description: CMDB-мнемоника продукта
+        default: ''
+        items:
+          type: ''
+      - name: show_hidden
+        position: query
+        required: false
+        type: boolean
+        description: >-
+          Показывать скрытые контейнеры/интерфейсы (query `show-hidden`). По
+          умолчанию false.
+        default: 'false'
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getE2eProcessByCmdb
+    description: End-to-end процессов по продукту
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.cmdb}}/e2e'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: cmdb
+        position: path
+        required: true
+        type: string
+        description: CMDB-код продукта
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getE2eList
+    description: >-
+      Список карточек e2e-процессов. filter: all (по умолчанию), without-bi-step,
+      with-bi-step.
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/e2e'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: filter
+        position: query
+        required: false
+        type: string
+        description: 'Фильтр: all | without-bi-step | with-bi-step'
+        default: all
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getE2eByCode
+    description: >-
+      E2e-процесс по коду: карточка, дерево operationsRelations и справочник
+      operations.
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/e2e/{{.Args.code}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: code
+        position: path
+        required: true
+        type: string
+        description: Код e2e (product.e2e.code)
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getEmployeeByAlias
+    description: Получить сотрудника по алиасу
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.alias}}/employee'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: alias
+        position: path
+        required: true
+        type: string
+        description: Алиас сотрудника
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getFreeAlias
+    description: Проверить, свободен ли alias продукта
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.alias}}/free'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: alias
+        position: path
+        required: true
+        type: string
+        description: Alias продукта
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getInfluencesByCmdb
+    description: Влияния продукта по CMDB-коду
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.cmdb}}/influence'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: cmdb
+        position: path
+        required: true
+        type: string
+        description: CMDB-код продукта
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getDiscoveredInterface
+    description: >-
+      Получить обнаруженный интерфейс с операциями (ровно один из параметров id,
+      external-id или api-id должен быть задан для поиска)
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/discovered-interface'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: query
+        required: false
+        type: integer
+        description: Внутренний ID интерфейса
+        default: ''
+        items:
+          type: int32
+      - name: external-id
+        position: query
+        required: false
+        type: integer
+        description: Внешний идентификатор из источника
+        default: ''
+        items:
+          type: int32
+      - name: api-id
+        position: query
+        required: false
+        type: integer
+        description: Идентификатор API в Mapic
+        default: ''
+        items:
+          type: int32
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getMapicApi
+    description: >-
+      Спецификация API по id в таблице mapic.api. Возвращает строковое
+      представление спецификации (например OpenAPI в текстовом виде).
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/mapic/spec/{{.Args.api-id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: api-id
+        position: path
+        required: true
+        type: integer
+        description: Идентификатор API в Mapic
+        default: ''
+        items:
+          type: int32
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getParent
+    description: Получить родительский элемент инфраструктуры
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/parent'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: query
+        required: true
+        type: integer
+        description: ID дочерней сущности
+        default: ''
+        items:
+          type: int32
+      - name: type
+        position: query
+        required: true
+        type: string
+        description: Тип сущности (контракт домена)
+        default: ''
+        items:
+          type: string
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductInfra
+    description: Получить инфраструктуру продукта
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/infra'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: productId
+        position: query
+        required: true
+        type: integer
+        description: Идентификатор продукта
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductInfraContainsName
+    description: Поиск инфраструктуры продукта по имени
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/infra/contains'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: name
+        position: query
+        required: true
+        type: string
+        description: Подстрока для поиска по имени
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductInteraction
+    description: >-
+      Взаимосвязи продукта по alias: providers (кто поставляет сервисы) и
+      consumers (кто потребляет сервисы продукта).
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.alias}}/interaction'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: alias
+        position: path
+        required: true
+        type: string
+        description: Alias продукта
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductsByIds
+    description: Получить продукты по списку id
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/by-ids'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: ids
+        position: query
+        required: true
+        type: array
+        description: >-
+          Идентификаторы продуктов, пример запроса:
+          ids=1&ids=2&ids=3&ids=4&ids=5
+        default: ''
+        items:
+          type: number
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductsFromMapic
+    description: Получить интерфейсы из Mapic для продукта
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.cmdb}}/interface/mapic'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: cmdb
+        position: path
+        required: true
+        type: string
+        description: CMDB-код продукта
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductsFromStructurizr
+    description: Получить интерфейсы из Structurizr для продукта
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.cmdb}}/interface/arch'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: cmdb
+        position: path
+        required: true
+        type: string
+        description: CMDB-код продукта
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductsInfo
+    description: >-
+      Все продукты: alias, name, id, critical (OP_1-OP_4), ownerName,
+      structurizrApiUrl, gitUrl. НЕ содержит techProducts и ownerEmail — для
+      этого используй getProductsInfoByCode.
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/info'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductsInfoByCode
+    description: >-
+      Полная информация о продукте по alias: критичность, владелец, технологии,
+      Structurizr. Используй ЭТОТ инструмент для ЛЮБЫХ вопросов о продукте кроме
+      доступности.
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.code}}/info'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: code
+        position: path
+        required: true
+        type: string
+        description: Alias продукта
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductsWithTech
+    description: >-
+      Все продукты с привязанными технологиями. Плоский список продуктов, у
+      которых есть связи с технологиями в сервисе.
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product-tech-relation'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProductsByTechId
+    description: Продукты, использующие технологию (по id технологии из Techradar)
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/tech/{{.Args.techId}}/product'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: techId
+        position: path
+        required: true
+        type: integer
+        description: Id технологии
+        default: ''
+        items:
+          type: int32
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getImplementedTechCapabilitiesByProductId
+    description: Список реализованных ТС (tech-capability) по продукту
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.id}}/tc-implementation'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: id продукта
+        default: ''
+        items:
+          type: int32
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getTcByContainerProduct
+    description: Получение ТС реализованных в контейнерах продукта
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/product/api/v1/product/implemented/container/tech-capability
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: containers
+        position: query
+        required: false
+        type: string
+        description: Идентификатор контейнера
+        default: containers=container1&containers=container2&containers=container3
+        items:
+          type: int64
+      - name: alias
+        position: query
+        required: false
+        type: string
+        description: code продукта
+        default: alias=my-product
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: requestToMapic
+    description: >-
+      Опубликованные API продукта из Mapic (список PublishedApiDTO для
+      CMDB-мнемоники, совместимый с форматом Mapic)
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/mapic/product/{{.Args.cmdb}}/published-api'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: cmdb
+        position: path
+        required: true
+        type: string
+        description: CMDB-мнемоника продукта
+        default: ''
+        items:
+          type: string
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: searchInfra
+    description: Поиск инфраструктуры по продуктам/критериям
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/infra/search'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: parameter
+        position: query
+        required: true
+        type: string
+        description: Имя параметра для поиска
+        default: ''
+        items:
+          type: string
+      - name: value
+        position: query
+        required: true
+        type: string
+        description: Значение параметра для поиска
+        default: ''
+        items:
+          type: string
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: search_operationsByPathAndType
+    description: Поиск операций по пути и типу поиска
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/operation'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: path
+        position: query
+        required: false
+        type: string
+        description: Фрагмент URL или пути операции
+        default: ''
+        items:
+          type: ''
+      - name: type
+        position: query
+        required: false
+        type: string
+        description: Тип объекта поиска (контракт сервиса)
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: search_operationsByTechCapabilityId
+    description: Поиск операций по id технической возможности (ТС)
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/operation/tech-capability/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: ID технической возможности
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: search_operationsTreeByTechCapabilityId
+    description: Поиск дерева операций по id технической возможности (ТС)
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/operation/tech-capability/{{.Args.id}}/tree'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: ID технической возможности
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+prompts: []
+mcpServers: []
+createdAt: '2026-06-26T06:20:30.767Z'
+updatedAt: '2026-07-31T14:19:00.000000000Z'
