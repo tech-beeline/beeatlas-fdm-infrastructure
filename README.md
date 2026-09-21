@@ -1,62 +1,117 @@
 # BeeAtlas FDM Infrastructure (Docker Compose)
 
+Репозиторий для поднятия **BeeAtlas FDM** одной командой Docker Compose.
+
 ## Оглавление
+
 1. [Общее описание](#1-общее-описание)
-2. [Два режима запуска](#2-два-режима-запуска)
-3. [Архитектура и сервисы](#3-архитектура-и-сервисы)
-4. [Требования](#4-требования)
-5. [Быстрый старт](#5-быстрый-старт)
-6. [Submodules и локальная разработка](#6-submodules-и-локальная-разработка)
-7. [Authentik — вход в приложение](#7-authentik--вход-в-приложение)
-8. [Конфигурация](#8-конфигурация)
-9. [Управление средой](#9-управление-средой)
-10. [Порты и URL](#10-порты-и-url)
-11. [Postman](#11-postman)
-12. [Известные ограничения локального стенда](#12-известные-ограничения-локального-стенда)
-13. [Лицензия](#13-лицензия)
+2. [Шпаргалка: локальные URL и доступы](#2-шпаргалка-локальные-url-и-доступы)
+3. [Два режима запуска](#3-два-режима-запуска)
+4. [Архитектура и сервисы](#4-архитектура-и-сервисы)
+5. [Требования](#5-требования)
+6. [Быстрый старт](#6-быстрый-старт)
+7. [Submodules и локальная разработка](#7-submodules-и-локальная-разработка)
+8. [Authentik — вход в приложение](#8-authentik--вход-в-приложение)
+9. [Конфигурация](#9-конфигурация)
+10. [Управление средой](#10-управление-средой)
+11. [Порты всех сервисов](#11-порты-всех-сервисов)
+12. [Postman](#12-postman)
+13. [Известные ограничения](#13-известные-ограничения)
+14. [Лицензия](#14-лицензия)
 
 ---
 
 ## 1. Общее описание
 
-`beeatlas-fdm-infrastructure` — репозиторий для поднятия **BeeAtlas FDM** одной командой Docker Compose.
-
-Все сервисы находятся в сети `fdm-network` и используют общую инфраструктуру:
+Все сервисы работают в сети `fdm-network` и используют общую инфраструктуру.
 
 | Компонент | Назначение |
 |-----------|------------|
-| **PostgreSQL** (`postgres`) | Единая БД `fdm_db`, отдельные **схемы** на сервис (`init-schemas.sql`) |
-| **RabbitMQ** (`rabbitmq`) | Очереди и exchange; конфиг в `rabbitmq/definitions.json` |
-| **Redis** (`redis`) | Кэш для `architect-graph-service`; брокер для Authentik |
-| **Neo4j** (`neo4j`) | Граф архитектуры для `architect-graph-service` |
-| **MinIO** (`document-service-minio`) | S3-хранилище для `document-service` |
-| **Authentik** (`authentik-server`, `authentik-worker`) | OIDC-логин для frontend |
-| **Gateway** (`gateway`) | Единая точка входа API |
-| **Frontend** (`beeatlas-frontend`) | UI BeeAtlas |
+| **PostgreSQL** (`fdm-postgres`) | Единая БД `fdm_db`, отдельные **схемы** на сервис (`init-schemas.sql`) |
+| **RabbitMQ** (`fdm-rabbitmq`) | Очереди и exchange; конфиг в `rabbitmq/definitions.json` |
+| **Redis** | Кэш для `architect-graph-service`; брокер для Authentik |
+| **Neo4j** | Граф архитектуры для `architect-graph-service` |
+| **Qdrant** | Векторное хранилище для `fdm-search` |
+| **MinIO** | S3-хранилище для `document-service` |
+| **Authentik** | OIDC-логин для frontend |
+| **Gateway** | Единая точка входа API |
+| **Frontend** | UI BeeAtlas |
 
 Общие переменные окружения — в **`common.env`**.
 
 ---
 
-## 2. Два режима запуска
+## 2. Шпаргалка: локальные URL и доступы
+
+### UI и вход
+
+| Что | URL | Логин / пароль |
+|-----|-----|----------------|
+| **Frontend (HTTP)** | http://localhost:3000 | через Authentik |
+| **Frontend (HTTPS через ingress)** | https://localhost:8443 | через Authentik |
+| **Authentik OIDC (HTTPS)** | https://localhost:9443 | — |
+| **Authentik админка (HTTP)** | http://localhost:5000 | `akadmin` / `password` |
+| **Документация** | http://localhost:8097 | — |
+
+После открытия фронта браузер редиректит на Authentik. Вход: **`akadmin` / `password`**.  
+В токене пользователь API — `defaultUser` (demo).
+
+> Рекомендуемый URL UI: **https://localhost:8443** (как в blueprint redirect URI).  
+> Также работает **http://localhost:3000** (redirect URI на `:3000` тоже разрешён).
+
+### API
+
+| Что | URL |
+|-----|-----|
+| **Gateway (основной API)** | http://localhost:8080 |
+| Health gateway | http://localhost:8080/actuator/health |
+| OIDC discovery | http://localhost:5000/application/o/beeatlas/.well-known/openid-configuration |
+
+### Инфраструктура: БД, очереди, S3, граф
+
+| Что | URL / адрес | Логин / пароль | Примечание |
+|-----|-------------|----------------|------------|
+| **PostgreSQL (FDM)** | `localhost:5433` | `postgres` / `postgres` | БД `fdm_db` |
+| **PostgreSQL (Authentik)** | `localhost:5434` | `authentik` / `authentik` | БД `authentik_db` |
+| **RabbitMQ AMQP** | `localhost:5672` | `guest` / `guest` | |
+| **RabbitMQ Management UI** | http://localhost:15672 | `guest` / `guest` | Очереди, exchange |
+| **Redis** | внутри сети `redis:6379` | пароль `redis-password` | На хост не проброшен |
+| **Neo4j Browser** | http://localhost:7474 | `neo4j` / `password` | |
+| **Neo4j Bolt** | `bolt://localhost:7687` | `neo4j` / `password` | |
+| **MinIO Console (S3 UI)** | http://localhost:9001 | `minioadmin` / `minioadmin` | Смотреть бакеты |
+| **MinIO S3 API** | http://localhost:9000 | `minioadmin` / `minioadmin` | Бакет `document-service-documents` |
+| **Qdrant** | http://localhost:6333 | API key `qdrant` | Для search |
+| **MCP Gateway (Unla)** | http://localhost:18080 | — | |
+
+### Полезные UI рядом
+
+| Что | URL | Логин / пароль |
+|-----|-----|----------------|
+| Structurizr On-Premises | http://localhost:8087 | — |
+| Structurizr backend OpenAPI | http://localhost:8086/docs | — |
+| Web IDE | http://localhost:8088 | пароль `my_secure_password` |
+
+Полная таблица портов микросервисов — [раздел 11](#11-порты-всех-сервисов).
+
+---
+
+## 3. Два режима запуска
 
 | Файл | Когда использовать |
 |------|-------------------|
-| **`docker-compose-run.yml`** | **Рекомендуется** — запуск **готовых образов** из GHCR (`ghcr.io/tech-beeline/...:latest`) |
+| **`docker-compose-run.yml`** | **Рекомендуется** — готовые образы из GHCR (`ghcr.io/tech-beeline/...:latest`) |
 | **`docker-compose.yml`** | Локальная **сборка** из submodules (`services/*/Dockerfile`) |
-
-> **Рекомендация:** для первого запуска и повседневной работы со стендом предпочтительнее **`docker-compose-run.yml`**. Не нужна долгая Maven-сборка Java-сервисов, меньше проблем с сетью и зависимостями при `docker compose build`. Файл `docker-compose.yml` используйте, когда меняете код в submodule и нужно проверить свежие изменения до push образа в GHCR.
 
 ```bash
 # Рекомендуемый способ — готовые образы
 docker compose -f docker-compose-run.yml pull
 docker compose -f docker-compose-run.yml up -d
 
-# Локальная сборка (разработка)
+# Локальная сборка (разработка кода в submodule)
 docker compose up -d --build
 ```
 
-Обновление всех образов из registry:
+Обновление образов:
 
 ```bash
 docker compose -f docker-compose-run.yml pull
@@ -65,20 +120,21 @@ docker compose -f docker-compose-run.yml up -d --force-recreate
 
 > **Podman:** те же команды с `podman compose` вместо `docker compose`.
 
-> **Важно:** изменения в submodule (например, миграции Flyway) попадут в `docker-compose-run.yml` только после **сборки и push образа** в GHCR. Для проверки свежего кода используйте `docker-compose.yml` или локальный `docker build`.
+> Изменения в submodule (миграции Flyway и т.п.) попадут в `docker-compose-run.yml` только после **сборки и push образа** в GHCR.
 
 ---
 
-## 3. Архитектура и сервисы
+## 4. Архитектура и сервисы
 
 ### Инфраструктура
 
-- `postgres`, `rabbitmq`, `redis`, `neo4j`
+- `postgres` (`fdm-postgres`), `rabbitmq`, `redis`, `neo4j`, `qdrant`
 - `authentik-postgres`, `authentik-server`, `authentik-worker`
 - `document-service-minio`, `document-service-minio-init`
-- `on-premises` — Structurizr On-Premises (порт 8087)
+- `ingress` — HTTPS: frontend `:8443`, Authentik `:9443`
+- `on-premises` — Structurizr On-Premises
 - `mcp-gateway`, `mcp-gateway-init` — MCP gateway (Unla)
-- `fdm-bpm-local-init` — одноразовая инициализация BPM URL в Postgres после старта `fdm-bpm`
+- `fdm-bpm-local-init` — одноразовая инициализация BPM URL в Postgres
 
 ### Java / Spring Boot
 
@@ -88,14 +144,16 @@ docker compose -f docker-compose-run.yml up -d --force-recreate
 | `fdm-auth-backend` | `user_auth` | Аутентификация и роли |
 | `capability-backend` | `capability` | Business / Tech Capability |
 | `products-service` | `product` | Продукты, контейнеры, операции |
-| `techradar-backend` | `techradar` | Техрадар, технологии, процессы |
-| `architect-graph-service` | — (Neo4j) | Архитектурный граф, RabbitMQ, Redis |
+| `techradar-backend` | `techradar` | Техрадар |
+| `architect-graph-service` | — (Neo4j) | Архитектурный граф |
 | `cx-service` | `cx` | Customer Journey |
 | `notifications-service` | `notification` | Уведомления |
 | `document-service` | `documents` | Документы (S3/MinIO) |
 | `fdm-pack-loader` | `pack_loader` | Загрузка пакетов |
-| `events-history` | `entity_events` | История событий сущностей |
+| `events-history` | `entity_events` | История событий |
 | `fdm-bpm` | `processes` (+ Camunda) | BPM / процессы |
+| `staging-service` | `staging` / `staging_camunda` | Staging |
+| `fdm-search` | — (Qdrant) | Поиск |
 
 ### Python / Node / прочее
 
@@ -105,32 +163,29 @@ docker compose -f docker-compose-run.yml up -d --force-recreate
 | `ff-manager` | Feature flags (схема `ff`) |
 | `obs-dashboard` | Генерация Grafana E2E-дашбордов по CJ |
 | `beeatlas-frontend` | Frontend |
-| `beeatlas-doc` | Документация (статический сервер) |
+| `beeatlas-doc` | Документация |
+| `web-ide` | VS Code Server + C4 |
 
-Схемы создаются при **первом** старте Postgres из `init-schemas.sql`:
-
-`product`, `capability`, `user_auth`, `techradar`, `pack_loader`, `entity_events`, `processes`, `cx`, `notification`, `documents`, `ff`.
-
-RabbitMQ при первом старте загружает очереди из `rabbitmq/definitions.json` (в т.ч. graph-очереди, `user_drop_cache`, `capability.exchange`).
+Схемы Postgres при **первом** старте (`init-schemas.sql`):  
+`product`, `capability`, `user_auth`, `techradar`, `pack_loader`, `entity_events`, `processes`, `cx`, `notification`, `documents`, `ff`, `staging`, `staging_camunda`.
 
 ---
 
-## 4. Требования
+## 5. Требования
 
 | Компонент | Версия |
 |-----------|--------|
 | Docker Engine / Podman | 20.10+ / 4.0+ |
 | Docker Compose (v2) | 2.0+ |
 | Git | для submodules |
-| Java 17 / Maven | только при сборке без Docker |
 
-Убедитесь, что свободны порты **3000**, **5000**, **5433**, **5434**, **5672**, **7474**, **7687**, **8080–8097**, **15672** (при необходимости — переопределите через `*_SERVICE_PORT` в compose).
+Свободные порты (по умолчанию): **3000**, **5000**, **5433**, **5434**, **5672**, **6333–6334**, **7474**, **7687**, **8080–8100**, **8443**, **9000–9001**, **9443**, **15672**, **18080**.
 
 ---
 
-## 5. Быстрый старт
+## 6. Быстрый старт
 
-### 5.1 Клонирование с submodules
+### 6.1 Клонирование
 
 ```bash
 git clone --recurse-submodules https://github.com/tech-beeline/beeatlas-fdm-infrastructure.git
@@ -143,81 +198,96 @@ cd beeatlas-fdm-infrastructure
 git submodule update --init --recursive
 ```
 
-### 5.2 Запуск стенда
-
-Authentik и остальная инфраструктура поднимаются **всегда** — отдельный профиль Compose или флаги при старте не нужны.
-
-**Готовые образы (рекомендуется):**
+### 6.2 Запуск
 
 ```bash
+# рекомендуется
 docker compose -f docker-compose-run.yml pull
 docker compose -f docker-compose-run.yml up -d
-```
 
-**Локальная сборка**:
-
-```bash
+# или локальная сборка
 docker compose up -d --build
 ```
 
-После старта дождитесь `healthy` у `postgres`, `fdm-auth-backend`, `gateway`, `authentik-server`, затем переходите к [разделу 7](#7-authentik--вход-в-приложение) — там пошаговый вход в UI.
+Дождитесь `healthy` у ключевых сервисов: `postgres`, `authentik-server`, `fdm-auth-backend`, `gateway`, `beeatlas-frontend`.
 
-В БД появляются тестовые данные auth/products (миграции в submodules).
-
-### 5.3 Проверка
+### 6.3 Проверка статуса
 
 ```bash
-docker compose ps
-curl -s http://localhost:8080/actuator/health
-curl -s http://localhost:8081/actuator/health   # fdm-auth-backend
-curl -s http://localhost:5000/application/o/beeatlas/.well-known/openid-configuration
+docker compose -f docker-compose-run.yml ps -a
 ```
 
-Подробная проверка Authentik и вход в UI — в [разделе 7](#7-authentik--вход-в-приложение).
+В рабочем состоянии сервисы стенда должны быть в статусе **`Up`** / **`healthy`**.  
+Контейнеры `*-init` после успешного выполнения завершаются со статусом **`Exited (0)`** — это штатное поведение.
+
+### 6.4 Быстрая проверка URL
+
+```bash
+curl -s http://localhost:8080/actuator/health
+curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3000/
+curl -s -o /dev/null -w "%{http_code}\n" http://localhost:5000/application/o/beeatlas/.well-known/openid-configuration
+```
+
+Ожидается `200` на OIDC discovery. Дальше — [вход через Authentik](#8-authentik--вход-в-приложение).
 
 ---
 
-## 6. Submodules и локальная разработка
+## 7. Submodules и локальная разработка
 
 Исходники микросервисов — git submodules в `services/` (см. `.gitmodules`).
+
+| Путь | Репозиторий |
+|------|-------------|
+| `services/gateway` | beeatlas-fdm-gateway-service |
+| `services/fdm-auth-service` | beeatlas-fdm-auth-service |
+| `services/products-service` | beeatlas-fdm-products-service |
+| `services/capability-service` | beeatlas-capability-backend-service |
+| `services/techradar-service` | beeatlas-fdm-techradar-service |
+| `services/architect-graph-service` | beeatlas-architect-graph-service |
+| `services/structurizr_backend` | beeatlas-structurizr-backend |
+| `services/notifications-service` | beeatlas-notifications-management |
+| `services/document-service` | beeatlas-document-service |
+| `services/cx-service` | beeatlas-fdm-cx-service |
+| `services/events-history` | beeatlas-events-history |
+| `services/fdm-pack-loader` | beeatlas-fdm-pack-loader |
+| `services/fdm-bpm` | beeatlas-fdm-bpm |
+| `services/ff-manager` | beeatlas-ff-manager |
+| `services/obs-dashboard` | beeatlas-obs-dashboard |
+| `services/prospect-frontend` | beeatlas-prospect-frontend |
+| `services/beeatlas-doc` | beeatlas-doc |
+| `services/staging-service` | beeatlas-staging-service |
+| `services/fdm-search` | beeatlas-fdm-search |
 
 Typical workflow:
 
 ```bash
-# обновить submodule до последнего main
 cd services/techradar-service && git pull origin main && cd ../..
-
-# пересобрать один сервис
 docker compose build techradar-backend
 docker compose up -d techradar-backend
 ```
 
-Для `docker-compose-run.yml` после push в GitHub дождитесь нового образа в GHCR и выполните `pull` (см. раздел 2).
-
-Frontend и `beeatlas-doc` — отдельные репозитории (`../beeatlas-prospect-frontend`, `../beeatlas-doc`), подключаются в `docker-compose.yml` через `build.context`.
+Для `docker-compose-run.yml` после изменений нужен новый образ в GHCR и `pull`.
 
 ---
 
-## 7. Authentik — вход в приложение
+## 8. Authentik — вход в приложение
 
-Authentik на локальном стенде нужен **только для UI**: форма логина, logout и обновление сессии на frontend.  
-API через gateway при этом работает в demo-режиме (`DEMO_AUTH=true`) — JWT на backend **не проверяется**.
+Authentik на локальном стенде нужен **для UI** (логин / logout / сессия).  
+API через gateway в demo-режиме (`DEMO_AUTH=true`) — JWT на backend **не проверяется**.
 
-Отдельный профиль Compose или переменные при `docker compose up` **не нужны** — Authentik поднимается вместе со всем стеком.
+Настройка OIDC — автоматически blueprint'ом `authentik-blueprints/fdm-minimal.yaml` (приложение slug **`beeatlas`**).
 
 ### Как это устроено
 
 ```mermaid
 sequenceDiagram
     participant U as Браузер
-    participant F as Frontend ingress SSL :8443
-    participant F as Frontend :3000
-    participant A as Authentik :5000
-    participant A as Authentik ingress SSL:9443
+    participant F as Frontend :3000 / :8443
+    participant A as Authentik :9443 / :5000
     participant G as Gateway :8080
     participant Auth as fdm-auth-backend
 
-    U->>F: Открыть https://localhost:8443
+    U->>F: Открыть UI
     F->>A: OIDC redirect (логин)
     A->>F: code + tokens (sub=defaultUser)
     F->>G: GET /user/defaultUser/roles
@@ -226,279 +296,165 @@ sequenceDiagram
     Auth-->>F: 200 OK
 ```
 
-| Компонент | Роль |
-|-----------|------|
-| **Authentik** | IdP для frontend: логин / logout |
-| **Frontend** | OIDC-клиент, slug приложения **`beeatlas`** |
-| **Gateway** | Проксирует API как `defaultUser` без проверки токена |
-| **fdm-auth-backend** | Хранит профиль и роли `defaultUser` в БД |
+### Пошаговый вход
 
-Всё перечисленное ниже настраивается **автоматически** blueprint'ом `authentik-blueprints/fdm-minimal.yaml` (монтируется в `authentik-server` и `authentik-worker`).
-
-### Режимы gateway
-
-Значения для `gateway` — в **`docker-compose.yml`** / **`docker-compose-run.yml`** (секция `gateway` → `environment`). Подробная таблица — [раздел 8](#8-конфигурация). После смены режима: `docker compose up -d gateway`.
-
-### Пошаговая инструкция: первый запуск
-
-**Шаг 1.** Поднимите стенд (см. [раздел 5](#52-запуск-стенда)):
+1. Поднимите стенд ([раздел 6](#6-быстрый-старт)).
+2. Убедитесь, что `Up`: `authentik-server`, `authentik-worker`, `gateway`, `fdm-auth-backend`, `beeatlas-frontend`, `ingress`.
+3. Проверьте blueprint (подождите 30–60 с после старта worker):
 
 ```bash
-# рекомендуется
-docker compose -f docker-compose-run.yml pull
-docker compose -f docker-compose-run.yml up -d
-# или локальная сборка
-docker compose up -d --build
+curl -s -o /dev/null -w "%{http_code}\n" http://localhost:5000/application/o/beeatlas/.well-known/openid-configuration
 ```
 
-**Шаг 2.** Дождитесь готовности сервисов:
+Ожидается **`200`**. Если **`404`** — blueprint ещё не применился (см. [устранение неполадок](#устранение-неполадок-authentik)).
 
-```bash
-docker compose ps
-```
+4. Откройте **https://localhost:8443** (или http://localhost:3000).
+5. Войдите в Authentik: **`akadmin` / `password`**.
+6. После входа вернётесь на frontend; роли загрузятся для `defaultUser`.
 
-Должны быть `running` / `healthy`: `authentik-server`, `authentik-worker`, `authentik-postgres`, `redis`, `gateway`, `fdm-auth-backend`, `beeatlas-frontend`.
-
-**Шаг 3.** Убедитесь, что blueprint применился (подождите 30–60 с после старта worker):
-
-```bash
-curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/application/o/beeatlas/.well-known/openid-configuration
-```
-
-```powershell
-# Windows (PowerShell)
-(Invoke-WebRequest -Uri "http://localhost:5000/application/o/beeatlas/.well-known/openid-configuration" -UseBasicParsing).StatusCode
-```
-
-Ожидается **`200`**. Если **`404`** — blueprint ещё не применился или упал с ошибкой, см. [устранение неполадок](#устранение-неполадок).
-
-**Шаг 4.** Откройте frontend: **https://localhost:8443**
-
-**Шаг 5.** На редиректе в Authentik войдите:
-
-| Поле | Значение |
-|------|----------|
-| Логин | `akadmin` |
-| Пароль | `password` (из `AUTHENTIK_BOOTSTRAP_PASSWORD` в `docker-compose.yml`) |
-
-**Шаг 6.** После успешного входа вы попадёте обратно на frontend. Приложение загрузит роли пользователя `defaultUser`.
-
-### Пошаговая инструкция: выход
-
-1. В UI нажмите **Выход**.
-2. Frontend отправит запрос на `https://localhost:9443/application/o/beeatlas/end-session/`.
-3. Authentik завершит сессию и перенаправит на `https://localhost:9443`.
-
-Если при выходе **404** — проверьте, что в Authentik есть приложение со slug **`beeatlas`** (не `fdm-app`). См. [устранение неполадок](#устранение-неполадок).
-
-### Что создаёт blueprint (справочно)
-
-Ручная настройка в UI Authentik **не требуется**, если blueprint в статусе `successful`. Для справки:
+### Что создаёт blueprint
 
 | Параметр | Значение |
 |----------|----------|
-| Файл | `authentik-blueprints/fdm-minimal.yaml` |
-| OAuth2-приложение | slug **`beeatlas`**, имя `beeatlas` |
+| Приложение | slug **`beeatlas`** |
 | `client_id` | `SxbmzvcDJHqs415xgqo8hPQh6CtHvop5jFGF1Wb2` |
-| Redirect URI | regex `https://localhost:8443/.*` |
+| Redirect URI | `https://localhost:8443/.*` и `http://localhost:3000/.*` |
 | Пользователь | `akadmin` → в токене `sub=defaultUser` |
-| Профиль в токене | Ivan Ivanov, `default@beeline.ru` |
-| Logout | invalidation flow → редирект на `https://localhost:9443` |
 
-Проверка в админке Authentik (**http://localhost:5000**):
+В админке Authentik (http://localhost:5000): **Applications** → `beeatlas`; **System → Blueprints** → `FDM minimal setup` → **`successful`**.
 
-1. **Applications** → есть `beeatlas`
-2. **System → Blueprints** → `FDM minimal setup` → статус **`successful`**
+> Если в UI Authentik «нет приложений» — blueprint не применился. Перезапустите worker: `docker restart authentik-worker`, подождите ~30 с, проверьте OIDC discovery.
 
-### Изменение blueprint
-
-После правок `authentik-blueprints/fdm-minimal.yaml`:
+### Переприменить blueprint
 
 ```bash
-# Docker
 docker restart authentik-worker
-
-# Podman
-podman restart authentik-worker
 ```
 
-Подождите ~20 с и проверьте статус blueprint в UI или командой `curl` из шага 3.
+Перезапуск `authentik-server` **не** переприменяет blueprint.
 
-> **Важно:** перезапуск `authentik-server` **не переприменяет** blueprint — нужен именно **`authentik-worker`**.
+### Устранение неполадок Authentik
 
-
-### настройка на другой hostname
-
-Для возможности подключения с удаленного хоста необходимо изменить конфигурацию SSL:
-
-* закоментировать серкию profile сервиса ingress в docker-compose.yml  либо явно запустить этот сервис
-
-* указать FLAG_AUTHENTIK_URL: https://<IP_OR_HOST>:9443 , где <IP_OR_HOST> соответствуют ноде docker. Внимание! Важна схема https.
-
-* отредактировать секции redirect_uris и target_static в файле authentik-blueprints/fdm-minimal.yaml, поменяв схему http на https, а порт на 8443. См. примеры в комментариях в файле
-
-* Пересоздать сервисы ingress authentic-server и beeatlas-frontend: 
-
-```bash
-docker compose down authentic-server
-docker compose down beeatlas-frontend
-docker compose down ingress
-docker-compose up -d
-```
-
-Проверка:
-
-```bash
-$ git diff
-```
-
-
-
-### Устранение неполадок
-
-| Симптом | Причина | Решение |
-|---------|---------|---------|
-| **Redirect URI Error** при логине | redirect URI не совпадает | В blueprint должен быть regex `http://localhost:3000/.*`; перезапустите `authentik-worker` |
-| **404** на `/application/o/beeatlas/...` | приложение не создано или slug другой | Проверьте blueprint (статус `successful`); в Applications должен быть slug `beeatlas` |
-| **404** на `/user/.../roles` после логина | в токене `sub` не `defaultUser` | Перелогиньтесь; в blueprint scope mapping задаёт `sub` из `winaccountname` |
-| Blueprint в статусе **error** | синтаксическая ошибка YAML | `docker logs authentik-worker 2>&1 \| grep fdm-minimal`; исправьте файл, перезапустите worker |
-| Старая сессия / странное поведение | кэш OIDC в браузере | Очистите localStorage/sessionStorage для `localhost:8443`, перелогиньтесь |
-| Изменения blueprint не видны | worker не перечитал файл | `podman restart authentik-worker`, подождать 20–30 с |
-
-Логи worker:
+| Симптом | Решение |
+|---------|---------|
+| Redirect URI Error | Проверьте redirect URI в blueprint; `docker restart authentik-worker` |
+| 404 на `/application/o/beeatlas/...` | Blueprint не applied; смотрите логи worker |
+| В админке нет приложений | То же — дождитесь/перезапустите `authentik-worker` |
+| 404 на `/user/.../roles` | В токене должен быть `sub=defaultUser` |
+| Ingress / `:9443` не отвечает | `docker compose -f docker-compose-run.yml ps ingress`; при CRLF в `ingress/generate-cert.sh` скрипт падает — нужны LF |
 
 ```bash
 docker logs authentik-worker 2>&1 | grep -E "fdm-minimal|blueprint|failed"
 ```
 
-### Учётные данные и URL
+### Вход с другого хоста (не localhost)
 
-| Что | URL / значение |
-|-----|----------------|
-| Frontend | https://localhost:8443 |
-| Authentik (UI + OIDC) | https://localhost:9443 |
-| Админ Authentik | `akadmin` / `password` |
-| Demo-пользователь в API | `defaultUser` (логин в fdm-auth БД) |
-| OIDC discovery | http://localhost:5000/application/o/beeatlas/.well-known/openid-configuration |
+1. Запустить `ingress`.
+2. В compose для frontend: `FLAG_AUTHENTIK_URL: https://<IP_OR_HOST>:9443` (схема **https** обязательна).
+3. В `authentik-blueprints/fdm-minimal.yaml` поправить `redirect_uris` и `target_static` на `https://<IP_OR_HOST>:8443`.
+4. Пересоздать `authentik-worker`, `beeatlas-frontend`, `ingress`.
 
 ---
 
-## 8. Конфигурация
+## 9. Конфигурация
 
 ### Режимы аутентификации gateway
 
-Переменные задаются в **`docker-compose.yml`** и **`docker-compose-run.yml`** (секция `gateway` → `environment`).  
-URL Authentik внутри сети compose — в **`common.env`** (`INTEGRATION_AUTHENTIC_AUTH_URL`).
+Флаги задаются в `docker-compose.yml` / `docker-compose-run.yml` → секция `gateway` → `environment`.  
+Они управляют тем, **как gateway принимает запросы к API**. На логин UI в Authentik это почти не влияет: фронт в любом случае ходит в Authentik за OIDC-токеном.
 
-#### Режим 1: Demo (по умолчанию, локальный стенд)
+| Переменная | За что отвечает |
+|------------|-----------------|
+| `DEMO_AUTH` | Если `true` — gateway **не требует** и **не проверяет** JWT. Запросы обрабатываются как demo-пользователь `defaultUser` (роли берутся из `fdm-auth-backend`). Удобно для локального стенда. |
+| `AUTHENTIC_AUTH` | Если `true` — gateway при старте загружает публичный ключ из JWKS Authentik (`…/application/o/beeatlas/jwks/`) и использует его для проверки подписи JWT. |
+| `SPRING_PROFILES_ACTIVE` | Spring-профиль. В профилях `local` / `func` / `e2e` проверка подписи JWT на gateway **отключена** (даже если токен передан). В `default` — полная проверка токена. |
 
-UI логинится через Authentik, API на gateway **без проверки JWT** — запросы идут как demo-пользователь `defaultUser`.
-
-| Переменная | Значение |
-|------------|----------|
-| `DEMO_AUTH` | `'true'` |
-| `AUTHENTIC_AUTH` | `'false'` |
-| `SPRING_PROFILES_ACTIVE` | `local` |
-| `JWKS` | `jwks` |
+#### Режим 1. Demo (по умолчанию на локальном стенде)
 
 ```yaml
-# gateway → environment
 DEMO_AUTH: 'true'
 AUTHENTIC_AUTH: 'false'
 SPRING_PROFILES_ACTIVE: local
-JWKS: "jwks"
 ```
 
-#### Режим 2: Authentik (проверка JWT)
+Как работает:
+1. Пользователь логинится во frontend через Authentik (форма логина).
+2. Запросы к API через gateway идут **без строгой проверки JWT**.
+3. Gateway считает пользователя demo (`defaultUser`) и ходит в `fdm-auth-backend` за ролями/правами.
 
-API принимает только запросы с `Authorization: Bearer <token>`. Подпись JWT проверяется по JWKS Authentik (`INTEGRATION_AUTHENTIC_AUTH_URL` в `common.env`).
+Когда использовать: повседневная локальная разработка и просмотр UI.
 
-| Переменная | Значение |
-|------------|----------|
-| `DEMO_AUTH` | `'false'` |
-| `AUTHENTIC_AUTH` | `'true'` |
-| `SPRING_PROFILES_ACTIVE` | `default` |
-| `JWKS` | `jwks` (не используется при `AUTHENTIC_AUTH=true`) |
+#### Режим 2. Authentik JWT (ближе к бою)
 
 ```yaml
-# gateway → environment
 DEMO_AUTH: 'false'
 AUTHENTIC_AUTH: 'true'
 SPRING_PROFILES_ACTIVE: default
-JWKS: "jwks"
 ```
 
-После смены режима:
+Как работает:
+1. Пользователь логинится во frontend через Authentik и получает JWT.
+2. Frontend передаёт `Authorization: Bearer <token>` в API.
+3. Gateway **требует** заголовок авторизации, проверяет JWT по ключу Authentik и только после этого проксирует запрос.
+
+Когда использовать: проверка реального OIDC-потока на API (токен обязателен, невалидный/просроченный — `401`).
+
+URL JWKS Authentik внутри сети compose задаётся в `common.env`:  
+`INTEGRATION_AUTHENTIC_AUTH_URL=http://authentik-server:9000`.
+
+После смены режима перезапустите gateway:
 
 ```bash
-docker compose up -d gateway
+docker compose -f docker-compose-run.yml up -d gateway
 ```
 
 Frontend менять не нужно: при `FLAG_IS_DEMO_STAND=true` он уже отправляет Bearer-токен Authentik.
-
 ### `common.env`
 
-Общие настройки для большинства Java-сервисов:
+Общие настройки Java-сервисов: Postgres, RabbitMQ, Neo4j, Redis, URL интеграций, S3 (`AWS_S3_*` → MinIO).
 
-- Postgres: `SPRING_DATASOURCE_*`
-- RabbitMQ: `SPRING_RABBITMQ_HOST=rabbitmq` (имя **сервиса**, не `container_name`)
-- Neo4j, Redis, URL интеграций между сервисами
-- Authentik (внутри сети compose): `INTEGRATION_AUTHENTIC_AUTH_URL=http://authentik-server:9000`
-
-Переопределения для отдельных сервисов — в секции `environment` в compose.
-
-### Ключевые переменные по сервисам
-
-| Сервис | Переменные |
-|--------|------------|
-| **gateway** | `DEMO_AUTH`, `AUTHENTIC_AUTH`, `QUEUE_USER_DROP_CACHE_NAME` |
-| **beeatlas-frontend** | `FLAG_IS_DEMO_STAND`, `FLAG_AUTHENTIK_URL`, `FLAG_AUTHENTIK_CLIENT_ID`, `NGINX_LOCATION_API_GATEWAY` |
-| **architect-graph-service** | `SPRING_REDIS_*`, `INTEGRATION_PRODUCT_SERVER_URL`, RabbitMQ exchange |
-| **fdm-bpm** | отдельные datasource для Camunda / processes / git |
-| **ff-manager** | `FF_DB_*`, `FF_*_API_BASE_URL` |
-| **obs-dashboard** | `GRAFANA_URL`, `E2E_TEMPLATE_URL`, `CX_SERVICE_URL`, `PRODUCT_SERVICE_URL` |
-
-### Где задавать переменные
-
-- **`docker-compose.yml`** / **`docker-compose-run.yml`** — режим gateway, порты, переменные frontend
-- **`common.env`** — общие URL, БД, RabbitMQ, `INTEGRATION_AUTHENTIC_AUTH_URL` и др. для Java-сервисов
+| Группа | Примеры |
+|--------|---------|
+| Postgres | `SPRING_DATASOURCE_*` → `postgres:5432` / `fdm_db` |
+| RabbitMQ | `SPRING_RABBITMQ_HOST=rabbitmq`, `guest`/`guest` |
+| Neo4j | `bolt://neo4j:7687`, `neo4j`/`password` |
+| MinIO/S3 | `AWS_S3_ACCESS_KEY=minioadmin`, `AWS_S3_SECRET_KEY=minioadmin` |
+| Authentik (внутри сети) | `INTEGRATION_AUTHENTIC_AUTH_URL=http://authentik-server:9000` |
 
 ---
 
-## 9. Управление средой
+## 10. Управление средой
 
 ```bash
-# остановка (данные сохраняются)
-docker compose down
+# остановка (тома сохраняются)
 docker compose -f docker-compose-run.yml down
 
-# полная очистка томов (чистая БД, RabbitMQ, Neo4j…)
-docker compose down -v
+# полная очистка томов (чистая БД, RabbitMQ, Neo4j, MinIO…)
+docker compose -f docker-compose-run.yml down -v
 
 # логи
-docker compose logs -f gateway
-docker compose logs -f authentik-worker
-docker compose logs -f techradar-backend
+docker compose -f docker-compose-run.yml logs -f gateway
+docker compose -f docker-compose-run.yml logs -f authentik-worker
 
 # перезапуск одного сервиса
-docker compose restart capability-backend
+docker compose -f docker-compose-run.yml restart capability-backend
 ```
 
-> `down` **не удаляет** тома. `down -v` — удаляет `postgres-data`, `rabbitmq-data` и др.; `init-schemas.sql` выполнится только при **первом** создании volume Postgres.
-
-После `down -v` Flyway накатывает миграции заново. Для techradar на чистой БД миграция V19 вставляет процессы только для `tech_id`, которые уже есть в таблице `tech`.
+> `down` **не удаляет** тома. `down -v` — удаляет; `init-schemas.sql` выполнится только при **первом** создании volume Postgres.
 
 ---
 
-## 10. Порты и URL
+## 11. Порты всех сервисов
 
 | Компонент | Host URL | Примечание |
 |-----------|----------|------------|
-| **INGRESS** | https://:8443  https://:9443| beeatlas-frontend |
-| **Frontend** | http://localhost:3000 | beeatlas-frontend |
-| **Gateway** | http://localhost:8080 | API / Swagger |
-| **Authentik UI** | http://localhost:5000 | OIDC, админка |
-| **beeatlas-doc** | http://localhost:8097 | документация |
+| **Ingress → Frontend** | https://localhost:8443 | SSL nginx |
+| **Ingress → Authentik** | https://localhost:9443 | SSL nginx |
+| **Frontend** | http://localhost:3000 | напрямую |
+| **Gateway** | http://localhost:8080 | основной API |
+| **Authentik UI** | http://localhost:5000 | админка / OIDC HTTP |
+| **Authentik HTTPS (напрямую)** | https://localhost:5443 | без ingress |
+| **beeatlas-doc** | http://localhost:8097 | |
 | **fdm-auth-backend** | http://localhost:8081 | |
 | **capability-backend** | http://localhost:8082 | |
 | **architect-graph-service** | http://localhost:8083 | |
@@ -506,51 +462,56 @@ docker compose restart capability-backend
 | **techradar-backend** | http://localhost:8085 | |
 | **structurizr-backend** | http://localhost:8086/docs | OpenAPI |
 | **Structurizr On-Premises** | http://localhost:8087 | |
-| **cx-service** | http://localhost:8098 | |
-| **web-ide** | http://localhost:8088 | vs-code server with C4 extension |
+| **web-ide** | http://localhost:8088 | |
 | **notifications-service** | http://localhost:8089 | |
 | **document-service** | http://localhost:8091 | |
 | **fdm-pack-loader** | http://localhost:8092 | |
 | **events-history** | http://localhost:8093 | |
 | **fdm-bpm** | http://localhost:8094 | |
 | **ff-manager** | http://localhost:8095 | |
-| **obs-dashboard** | http://localhost:8096 | Node.js API |
-| **PostgreSQL** | localhost:5433 | `postgres/postgres`, БД `fdm_db` |
-| **Authentik Postgres** | localhost:5434 | `authentik/authentik`, БД `authentik_db` |
-| **RabbitMQ UI** | http://localhost:15672 | `guest/guest` |
-| **Neo4j Browser** | http://localhost:7474 | `neo4j/password` |
+| **obs-dashboard** | http://localhost:8096 | |
+| **cx-service** | http://localhost:8098 | |
+| **staging-service** | http://localhost:8099 | |
+| **fdm-search** | http://localhost:8100 | |
+| **PostgreSQL** | localhost:5433 | `postgres`/`postgres`, `fdm_db` |
+| **Authentik Postgres** | localhost:5434 | `authentik`/`authentik` |
+| **RabbitMQ AMQP** | localhost:5672 | `guest`/`guest` |
+| **RabbitMQ UI** | http://localhost:15672 | `guest`/`guest` |
+| **Neo4j Browser** | http://localhost:7474 | `neo4j`/`password` |
 | **Neo4j Bolt** | bolt://localhost:7687 | |
-| **MinIO API / Console** | :9000 / :9001 | если порты не переопределены |
+| **Qdrant** | http://localhost:6333 | API key `qdrant` |
+| **MinIO API** | http://localhost:9000 | `minioadmin`/`minioadmin` |
+| **MinIO Console** | http://localhost:9001 | бакет `document-service-documents` |
 | **MCP Gateway** | http://localhost:18080 | Unla |
 
-Порты настраиваются через переменные `*_SERVICE_PORT` в compose.
+Порты можно переопределять через `*_SERVICE_PORT` / `DOCUMENT_MINIO_*_PORT` в compose.
 
 ---
 
-## 11. Postman
+## 12. Postman
 
 В папке `postman/` — коллекция для Gateway.
 
 - Import → файл из `postman/`
-- Переменная окружения `baseUrl` = `http://localhost:8080`
+- `baseUrl` = `http://localhost:8080`
 
 ---
 
-## 12. Известные ограничения локального стенда
+## 13. Известные ограничения
 
 | Тема | Детали |
 |------|--------|
-| **Grafana** | В compose **нет** сервиса Grafana; URL в `common.env` — заглушка. `obs-dashboard` требует реальный Grafana и корректный `E2E_TEMPLATE_URL` для полной работы |
-| **obs-dashboard** | При старте проверяет формат `E2E_TEMPLATE_URL` (`{GRAFANA_URL}/d/{uid}/...`). Без Grafana API publish дашбордов не заработает |
-| **GHCR образы** | Тег `:latest` кэшируется локально — используйте `pull` перед `up` или `pull_policy: always` на отдельных сервисах в `docker-compose-run.yml` |
-| **Authentik blueprint** | Подробности — [раздел 7](#7-authentik--вход-в-приложение); кратко: при ошибке YAML перезапустите `authentik-worker` |
-| **init-schemas.sql** | Только при **первом** создании volume Postgres; на существующей БД схемы добавляйте вручную |
-| **RabbitMQ definitions** | На существующем volume RabbitMQ новые exchange/очереди из JSON могут не подтянуться — пересоздайте volume или добавьте вручную |
-| **Внешние интеграции** | CMDB, staging-sequence, ambassador и др. в `common.env` — mock URL, сервисов в compose нет |
+| **Grafana** | В compose нет Grafana; `obs-dashboard` без реального Grafana ограничен |
+| **GHCR `:latest`** | Кэшируется локально — делайте `pull` перед `up` |
+| **Authentik blueprint** | При ошибке YAML / «нет приложений» — `docker restart authentik-worker` |
+| **init-schemas.sql** | Только при первом создании volume Postgres |
+| **RabbitMQ definitions** | На старом volume новые очереди из JSON могут не подтянуться |
+| **ingress + Windows** | `ingress/generate-cert.sh` должен быть с LF (не CRLF), иначе ingress в crash-loop |
+| **Внешние интеграции** | Часть URL в `common.env` — mock, сервисов в compose нет |
 
 ---
 
-## 13. Лицензия
+## 14. Лицензия
 
 Проект распространяется под **Apache License 2.0**. См. файл `LICENSE`.
 
@@ -558,14 +519,14 @@ docker compose restart capability-backend
 
 ## Краткий чек-лист
 
-| Шаг | Команда |
-|-----|---------|
-| Клон с submodules | `git clone --recurse-submodules …` |
-| Стенд (build) | `docker compose up -d --build` |
-| Стенд (GHCR) | `docker compose -f docker-compose-run.yml pull && docker compose -f docker-compose-run.yml up -d` |
-| Режим gateway | см. [раздел 8](#8-конфигурация): demo или Authentik, затем `docker compose up -d gateway` |
-| Обновить образы | `docker compose -f docker-compose-run.yml pull && docker compose -f docker-compose-run.yml up -d --force-recreate` |
-| UI + вход | [раздел 7](#7-authentik--вход-в-приложение): http://localhost:3000 → **akadmin** / **password** |
-| Остановка | `docker compose down` |
-| Чистая БД | `docker compose down -v` |
-| Логи | `docker compose logs -f <service-name>` |
+| Шаг | Команда / действие |
+|-----|-------------------|
+| Клон | `git clone --recurse-submodules …` |
+| Старт (GHCR) | `docker compose -f docker-compose-run.yml pull && docker compose -f docker-compose-run.yml up -d` |
+| UI | https://localhost:8443 или http://localhost:3000 |
+| Логин | `akadmin` / `password` |
+| API | http://localhost:8080 |
+| S3 (MinIO) | http://localhost:9001 → `minioadmin` / `minioadmin` |
+| Очереди | http://localhost:15672 → `guest` / `guest` |
+| Остановка | `docker compose -f docker-compose-run.yml down` |
+| Чистая БД | `docker compose -f docker-compose-run.yml down -v` |
