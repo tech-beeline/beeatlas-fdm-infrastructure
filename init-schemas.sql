@@ -11,12 +11,13 @@ CREATE SCHEMA IF NOT EXISTS documents;
 CREATE SCHEMA IF NOT EXISTS ff;
 CREATE SCHEMA IF NOT EXISTS staging;
 CREATE SCHEMA IF NOT EXISTS staging_camunda;
+CREATE SCHEMA IF NOT EXISTS projects;
 
 CREATE TABLE IF NOT EXISTS public.v_fdm_gitlab_languages (
-    cmdb_code       VARCHAR(255) PRIMARY KEY,
+                                                             cmdb_code       VARCHAR(255) PRIMARY KEY,
     proj_lang       VARCHAR(255),
     extraction_date DATE
-);
+    );
 
 DO $$
 BEGIN

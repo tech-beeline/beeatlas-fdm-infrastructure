@@ -875,6 +875,57 @@ services:
       - fdm-network
     restart: unless-stopped
 
+  project-backend:
+    image: ghcr.io/tech-beeline/beeatlas-project-backend:latest
+    container_name: project-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      fdm-auth-backend:
+        condition: service_healthy
+      products-service:
+        condition: service_healthy
+    env_file:
+      - ./common.env
+    environment:
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: projects
+      SPRING_FLYWAY_DEFAULT_SCHEMA: projects
+      SPRING_FLYWAY_BASELINE_ON_MIGRATE: "true"
+      SPRING_FLYWAY_CLEAN_DISABLED: "true"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
+    ports:
+      - "${PROJECT_BACKEND_SERVICE_PORT:-8101}:8080"
+    networks:
+      - fdm-network
+    restart: unless-stopped
+
+  solution-checker:
+    image: ghcr.io/tech-beeline/beeatlas-solution-checker-backend:latest
+    container_name: solution-checker
+    depends_on:
+      gateway:
+        condition: service_started
+      fdm-search:
+        condition: service_healthy
+    env_file:
+      - ./common.env
+    healthcheck:
+      test: [ "CMD-SHELL", "python3 -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/api/health').read()\" || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    ports:
+      - "${SOLUTION_CHECKER_SERVICE_PORT:-8102}:8080"
+    networks:
+      - fdm-network
+    restart: unless-stopped
 
   web-ide:
     build:
@@ -889,11 +940,8 @@ services:
       - PASSWORD=my_secure_password
       - WORKSPACE=workspace
     volumes:
-      # Монтируем папку с проектами
       - ./workspace:/home/vscode/workspace
-      # Том для расширений (сохраняются между перезапусками)
       - ./web-ide/vscode-extensions:/home/vscode/.local/share/code-server/extensions
-      # Монтируем локальную папку с сертификатами (если есть)
       - ./certs:/certs:ro
     networks:
       - fdm-network

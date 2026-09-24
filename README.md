@@ -89,6 +89,8 @@
 |-----|-----|----------------|
 | Structurizr On-Premises | http://localhost:8087 | — |
 | Structurizr backend OpenAPI | http://localhost:8086/docs | — |
+| project-backend OpenAPI | http://localhost:8101/swagger-ui.html | — |
+| solution-checker OpenAPI | http://localhost:8102/docs | — |
 | Web IDE | http://localhost:8088 | пароль `my_secure_password` |
 
 Полная таблица портов микросервисов — [раздел 11](#11-порты-всех-сервисов).
@@ -154,6 +156,7 @@ docker compose -f docker-compose-run.yml up -d --force-recreate
 | `fdm-bpm` | `processes` (+ Camunda) | BPM / процессы |
 | `staging-service` | `staging` / `staging_camunda` | Staging |
 | `fdm-search` | — (Qdrant) | Поиск |
+| `project-backend` | `projects` | Проекты, оценки, use case |
 
 ### Python / Node / прочее
 
@@ -162,12 +165,13 @@ docker compose -f docker-compose-run.yml up -d --force-recreate
 | `structurizr-backend` | API диаграмм (FastAPI) |
 | `ff-manager` | Feature flags (схема `ff`) |
 | `obs-dashboard` | Генерация Grafana E2E-дашбордов по CJ |
+| `solution-checker` | HLD Agent: анализ требований, BC/TC, публикация в Confluence |
 | `beeatlas-frontend` | Frontend |
 | `beeatlas-doc` | Документация |
 | `web-ide` | VS Code Server + C4 |
 
 Схемы Postgres при **первом** старте (`init-schemas.sql`):  
-`product`, `capability`, `user_auth`, `techradar`, `pack_loader`, `entity_events`, `processes`, `cx`, `notification`, `documents`, `ff`, `staging`, `staging_camunda`.
+`product`, `capability`, `user_auth`, `techradar`, `pack_loader`, `entity_events`, `processes`, `cx`, `notification`, `documents`, `ff`, `staging`, `staging_camunda`, `projects`.
 
 ---
 
@@ -179,7 +183,7 @@ docker compose -f docker-compose-run.yml up -d --force-recreate
 | Docker Compose (v2) | 2.0+ |
 | Git | для submodules |
 
-Свободные порты (по умолчанию): **3000**, **5000**, **5433**, **5434**, **5672**, **6333–6334**, **7474**, **7687**, **8080–8100**, **8443**, **9000–9001**, **9443**, **15672**, **18080**.
+Свободные порты (по умолчанию): **3000**, **5000**, **5433**, **5434**, **5672**, **6333–6334**, **7474**, **7687**, **8080–8102**, **8443**, **9000–9001**, **9443**, **15672**, **18080**.
 
 ---
 
@@ -257,6 +261,8 @@ curl -s -o /dev/null -w "%{http_code}\n" http://localhost:5000/application/o/bee
 | `services/beeatlas-doc` | beeatlas-doc |
 | `services/staging-service` | beeatlas-staging-service |
 | `services/fdm-search` | beeatlas-fdm-search |
+| `services/project-backend` | beeatlas-project-backend |
+| `services/solution-checker-backend` | beeatlas-solution-checker-backend |
 
 Typical workflow:
 
@@ -420,6 +426,8 @@ Frontend менять не нужно: при `FLAG_IS_DEMO_STAND=true` он у�
 | Neo4j | `bolt://neo4j:7687`, `neo4j`/`password` |
 | MinIO/S3 | `AWS_S3_ACCESS_KEY=minioadmin`, `AWS_S3_SECRET_KEY=minioadmin` |
 | Authentik (внутри сети) | `INTEGRATION_AUTHENTIC_AUTH_URL=http://authentik-server:9000` |
+| LLM (fdm-search, solution-checker) | `LLM_API_URL`, `LLM_MODEL`, `LLM_API_KEY` |
+| solution-checker → Gateway | `BEEATLAS_API_URL=http://gateway:8080`, `BEEATLAS_API_KEY` / `BEEATLAS_API_SECRET` (на demo-стенде заглушки, HMAC не проверяется) |
 
 ---
 
@@ -473,6 +481,8 @@ docker compose -f docker-compose-run.yml restart capability-backend
 | **cx-service** | http://localhost:8098 | |
 | **staging-service** | http://localhost:8099 | |
 | **fdm-search** | http://localhost:8100 | |
+| **project-backend** | http://localhost:8101 | |
+| **solution-checker** | http://localhost:8102 | |
 | **PostgreSQL** | localhost:5433 | `postgres`/`postgres`, `fdm_db` |
 | **Authentik Postgres** | localhost:5434 | `authentik`/`authentik` |
 | **RabbitMQ AMQP** | localhost:5672 | `guest`/`guest` |
@@ -484,7 +494,7 @@ docker compose -f docker-compose-run.yml restart capability-backend
 | **MinIO Console** | http://localhost:9001 | бакет `document-service-documents` |
 | **MCP Gateway** | http://localhost:18080 | Unla |
 
-Порты можно переопределять через `*_SERVICE_PORT` / `DOCUMENT_MINIO_*_PORT` в compose.
+Порты можно переопределять через `*_SERVICE_PORT` / `DOCUMENT_MINIO_*_PORT` в compose (`PROJECT_BACKEND_SERVICE_PORT`, `SOLUTION_CHECKER_SERVICE_PORT` и т.д.).
 
 ---
 
@@ -508,6 +518,8 @@ docker compose -f docker-compose-run.yml restart capability-backend
 | **RabbitMQ definitions** | На старом volume новые очереди из JSON могут не подтянуться |
 | **ingress + Windows** | `ingress/generate-cert.sh` должен быть с LF (не CRLF), иначе ingress в crash-loop |
 | **Внешние интеграции** | Часть URL в `common.env` — mock, сервисов в compose нет |
+| **LLM_API_KEY** | `fdm-search` и `solution-checker` без реального ключа стартуют, но эмбеддинги / анализ требований не работают |
+| **solution-checker HMAC** | `BEEATLAS_API_KEY` / `SECRET` — заглушки; на стенде `DEMO_AUTH=true`, gateway HMAC не проверяет |
 
 ---
 
