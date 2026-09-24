@@ -73,3 +73,6 @@
 	path = services/fdm-search
 	url = https://github.com/tech-beeline/beeatlas-fdm-search.git
 	branch = main
+[submodule "services/project-backend"]
+	path = services/project-backend
+	url = https://github.com/tech-beeline/beeatlas-project-backend.git
