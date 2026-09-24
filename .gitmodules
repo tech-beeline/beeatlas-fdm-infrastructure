@@ -76,3 +76,6 @@
 [submodule "services/project-backend"]
 	path = services/project-backend
 	url = https://github.com/tech-beeline/beeatlas-project-backend.git
+[submodule "services/solution-checker-backend"]
+	path = services/solution-checker-backend
+	url = https://github.com/tech-beeline/beeatlas-solution-checker-backend.git
