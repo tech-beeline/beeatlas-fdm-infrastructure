@@ -701,6 +701,24 @@ services:
       - fdm-network
     restart: unless-stopped
 
+  fdm-bpm-fix-init:
+    image: postgres:15-alpine
+    container_name: fdm-bpm-fix-init
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./scripts/fdm-bpm-fix-v0002.sql:/fix.sql:ro
+    environment:
+      PGPASSWORD: postgres
+    entrypoint: >
+      /bin/sh -c "
+      psql -h postgres -U postgres -d fdm_db -v ON_ERROR_STOP=1 -f /fix.sql
+      "
+    restart: "no"
+    networks:
+      - fdm-network
+
   fdm-bpm:
     image: ghcr.io/tech-beeline/beeatlas-fdm-bpm:latest
     container_name: fdm-bpm
@@ -709,6 +727,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      fdm-bpm-fix-init:
+        condition: service_completed_successfully
     env_file:
       - ./common.env
     environment:
