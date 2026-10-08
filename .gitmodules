@@ -79,3 +79,7 @@
 [submodule "services/solution-checker-backend"]
 	path = services/solution-checker-backend
 	url = https://github.com/tech-beeline/beeatlas-solution-checker-backend.git
+[submodule "services/ai-chat"]
+	path = services/ai-chat
+	url = https://github.com/tech-beeline/beeatlas-ai-chat-service.git
+	branch = main
