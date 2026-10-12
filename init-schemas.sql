@@ -12,6 +12,8 @@ CREATE SCHEMA IF NOT EXISTS ff;
 CREATE SCHEMA IF NOT EXISTS staging;
 CREATE SCHEMA IF NOT EXISTS staging_camunda;
 CREATE SCHEMA IF NOT EXISTS projects;
+CREATE SCHEMA IF NOT EXISTS chat;
+CREATE SCHEMA IF NOT EXISTS n8n;
 
 CREATE TABLE IF NOT EXISTS public.v_fdm_gitlab_languages (
                                                              cmdb_code       VARCHAR(255) PRIMARY KEY,

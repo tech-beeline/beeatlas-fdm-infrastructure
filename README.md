@@ -166,12 +166,14 @@ docker compose -f docker-compose-run.yml up -d --force-recreate
 | `ff-manager` | Feature flags (схема `ff`) |
 | `obs-dashboard` | Генерация Grafana E2E-дашбордов по CJ |
 | `solution-checker` | HLD Agent: анализ требований, BC/TC, публикация в Confluence |
+| `ai-chat` | Сессии AI-чата (метаданные + вызов n8n webhook) |
+| `n8n` | Workflow-движок для AI-чата |
 | `beeatlas-frontend` | Frontend |
 | `beeatlas-doc` | Документация |
 | `web-ide` | VS Code Server + C4 |
 
 Схемы Postgres при **первом** старте (`init-schemas.sql`):  
-`product`, `capability`, `user_auth`, `techradar`, `pack_loader`, `entity_events`, `processes`, `cx`, `notification`, `documents`, `ff`, `staging`, `staging_camunda`, `projects`.
+`product`, `capability`, `user_auth`, `techradar`, `pack_loader`, `entity_events`, `processes`, `cx`, `notification`, `documents`, `ff`, `staging`, `staging_camunda`, `projects`, `chat`, `n8n`.
 
 ---
 
@@ -183,7 +185,7 @@ docker compose -f docker-compose-run.yml up -d --force-recreate
 | Docker Compose (v2) | 2.0+ |
 | Git | для submodules |
 
-Свободные порты (по умолчанию): **3000**, **5000**, **5433**, **5434**, **5672**, **6333–6334**, **7474**, **7687**, **8080–8102**, **8443**, **9000–9001**, **9443**, **15672**, **18080**.
+Свободные порты (по умолчанию): **3000**, **5000**, **5433**, **5434**, **5672**, **5678**, **6333–6334**, **7474**, **7687**, **8080–8103**, **8443**, **9000–9001**, **9443**, **15672**, **18080**.
 
 ---
 
@@ -263,6 +265,7 @@ curl -s -o /dev/null -w "%{http_code}\n" http://localhost:5000/application/o/bee
 | `services/fdm-search` | beeatlas-fdm-search |
 | `services/project-backend` | beeatlas-project-backend |
 | `services/solution-checker-backend` | beeatlas-solution-checker-backend |
+| `services/ai-chat` | beeatlas-ai-chat-service |
 
 Typical workflow:
 
@@ -428,6 +431,7 @@ Frontend менять не нужно: при `FLAG_IS_DEMO_STAND=true` он у�
 | Authentik (внутри сети) | `INTEGRATION_AUTHENTIC_AUTH_URL=http://authentik-server:9000` |
 | LLM (fdm-search, solution-checker) | `LLM_API_URL`, `LLM_MODEL`, `LLM_API_KEY` |
 | solution-checker → Gateway | `BEEATLAS_API_URL=http://gateway:8080`, `BEEATLAS_API_KEY` / `BEEATLAS_API_SECRET` (на demo-стенде заглушки, HMAC не проверяется) |
+| ai-chat / n8n | `CHAT_DB_*`, `CHAT_N8N_BASE_URL=http://n8n:5678`, `CHAT_N8N_CHAT_WEBHOOK_PATH` |
 
 ---
 
@@ -483,6 +487,8 @@ docker compose -f docker-compose-run.yml restart capability-backend
 | **fdm-search** | http://localhost:8100 | |
 | **project-backend** | http://localhost:8101 | |
 | **solution-checker** | http://localhost:8102 | |
+| **ai-chat** | http://localhost:8103 | Swagger `/docs` |
+| **n8n** | http://localhost:5678 | UI workflow; webhook для `ai-chat` |
 | **PostgreSQL** | localhost:5433 | `postgres`/`postgres`, `fdm_db` |
 | **Authentik Postgres** | localhost:5434 | `authentik`/`authentik` |
 | **RabbitMQ AMQP** | localhost:5672 | `guest`/`guest` |
