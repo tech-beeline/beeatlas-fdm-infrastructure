@@ -33,21 +33,21 @@ servers:
       - getTechById
       - getKidsByIdV2
       - getKidsById
-      - getById
-      - getBusinessCapabilityOrderById
-      - getBusinessCapabilityHistory
-      - findTechCapabilitiesByProductId
+      - geBcById
+      - getBcOrderById
+      - getBcHistory
+      - findTcByProductId
       - getParentsById
       - getBusinessCapabilities
-      - getBusinessCapabilityTreeById
-      - getBusinessCapabilityOrderDraft
+      - getBcTreeById
+      - getBcOrderDraft
       - getTechCapabilities
       - getAllKidsIdById
-      - getBusinessCapabilityHistoryVersion
+      - getBcHistoryVersion
       - getTechCapabilityHistory
-      - searchCapability
+      - searchCapabilities
       - getParentsById_1
-      - getTechCapabilityHistoryVersion
+      - getTcHistoryVersion
       - getBusinessCapabilityTree
       - getCriteriaList
     config:
@@ -127,8 +127,8 @@ tools:
           type: ''
     requestBody: ''
     responseBody: '{{.Response.Body}}'
-  - name: getById
-    description: Возвращает бизнес-возможность по её id.
+  - name: geBcById
+    description: Возвращает бизнес-возможность (BC) по её id.
     method: GET
     endpoint: '{{.Config.url}}/capability/api/v1/business-capability/{{.Args.id}}'
     headers:
@@ -145,7 +145,7 @@ tools:
           type: ''
     requestBody: ''
     responseBody: '{{.Response.Body}}'
-  - name: getBusinessCapabilityOrderById
+  - name: getBcOrderById
     description: Возвращает черновик/заказ публикации по id.
     method: GET
     endpoint: '{{.Config.url}}/capability/api/v1/business-capability/order/{{.Args.id}}'
@@ -163,7 +163,7 @@ tools:
           type: ''
     requestBody: ''
     responseBody: '{{.Response.Body}}'
-  - name: getBusinessCapabilityHistory
+  - name: getBcHistory
     description: Возвращает историю версий бизнес-возможности.
     method: GET
     endpoint: '{{.Config.url}}/capability/api/v1/business-capability/history/{{.Args.id}}'
@@ -181,8 +181,8 @@ tools:
           type: ''
     requestBody: ''
     responseBody: '{{.Response.Body}}'
-  - name: findTechCapabilitiesByProductId
-    description: Возвращает технические возможности (ТС), которыми владеет продукт.
+  - name: findTcByProductId
+    description: Возвращает технические возможности (ТС), реализованные в продукте.
     method: GET
     endpoint: '{{.Config.url}}/capability/api/v1/tech-capabilities/product/{{.Args.id}}'
     headers:
@@ -251,7 +251,7 @@ tools:
           type: ''
     requestBody: ''
     responseBody: '{{.Response.Body}}'
-  - name: getBusinessCapabilityTreeById
+  - name: getBcTreeById
     description: Возвращает дерево, построенное от указанной бизнес-возможности.
     method: GET
     endpoint: '{{.Config.url}}/capability/api/v1/business-capability/tree/{{.Args.id}}'
@@ -269,7 +269,7 @@ tools:
           type: ''
     requestBody: ''
     responseBody: '{{.Response.Body}}'
-  - name: getBusinessCapabilityOrderDraft
+  - name: getBcOrderDraft
     description: Возвращает текущие черновики публикации каталога.
     method: GET
     endpoint: '{{.Config.url}}/capability/api/v1/business-capability/order/draft'
@@ -323,7 +323,7 @@ tools:
           type: ''
     requestBody: ''
     responseBody: '{{.Response.Body}}'
-  - name: getBusinessCapabilityHistoryVersion
+  - name: getBcHistoryVersion
     description: Возвращает сравнение указанной версии с другой (при наличии параметра).
     method: GET
     endpoint: >-
@@ -376,30 +376,97 @@ tools:
           type: ''
     requestBody: ''
     responseBody: '{{.Response.Body}}'
-  - name: searchCapability
-    description: Ищет Возможности, по сущностям, по строке запроса и типу поиска.
+  - name: searchCapabilities
+    description: >-
+      Поиск TC (технические возможности) и BC (бизнес-возможности) в fdm-search.
+      Два режима — выбери один. (1) Код известен: только code, например TC-12345
+      или BC-018021; опционально entity_type=tc или bc. (2) Поиск по смыслу:
+      query на естественном языке («оплата услуг», «блокировка SIM») + фильтры
+      по задаче (см. описания параметров). Ответ: found, results[] с payload
+      (code, name, description, entity_type, score).
     method: GET
-    endpoint: '{{.Config.url}}/capability/api/v1/find'
+    endpoint: >-
+      {{.Config.url}}/search/api/v1/search?query={{.Args.query}}&code={{.Args.code}}&entity_type={{.Args.entity_type}}&exclude_systems={{.Args.exclude_systems}}&parent={{.Args.parent}}&is_domain={{.Args.is_domain}}&limit={{.Args.limit}}&llm_rerank={{.Args.llm_rerank}}
     headers:
       Authorization: '{{.Request.Headers.Authorization}}'
       Content-Type: application/json
     args:
-      - name: findBy
+      - name: query
         position: query
         required: false
         type: string
-        description: Тип сущности для поиска (по умолчанию ALL).
-        default: ALL
-        items:
-          type: ''
-      - name: search
-        position: query
-        required: true
-        type: string
-        description: Строка поиска.
+        description: >-
+          Семантический поиск по смыслу, когда кода нет. Формулировка задачи или
+          домена своими словами. Пример: «управление тарифами», «блокировка
+          абонента». Не передавай вместе с code.
         default: ''
         items:
           type: ''
+      - name: code
+        position: query
+        required: false
+        type: string
+        description: >-
+          Точный поиск, когда код уже известен. Пример: TC-12345, BC-018021.
+          Передавай только code; query, parent, exclude_systems, is_domain,
+          llm_rerank не нужны.
+        default: ''
+        items:
+          type: ''
+      - name: entity_type
+        position: query
+        required: false
+        type: string
+        description: >-
+          Кого искать: tc — только технические, bc — только бизнес, tc,bc — оба
+          (default). С query: bc для бизнес-процессов, tc для IT/систем. С code:
+          уточни тип, если известен.
+        default: tc,bc
+        items:
+          type: ''
+      - name: exclude_systems
+        position: query
+        required: false
+        type: string
+        description: >-
+          Только с query и entity_type=tc. Исключить системы из результатов —
+          alias или name через запятую. Пример: LegacyCRM,BillingOld. Когда
+          пользователь просит не учитывать системы.
+        default: ''
+        items:
+          type: ''
+      - name: parent
+        position: query
+        required: false
+        type: string
+        description: >-
+          Только с query. Сузить поиск до ветки каталога BC — коды родителей
+          через запятую (OR). Пример: BC-018021,CATALOG_BC. Когда нужны TC/BC
+          только внутри известной бизнес-области.
+        default: ''
+        items:
+          type: ''
+      - name: is_domain
+        position: query
+        required: false
+        type: boolean
+        description: >-
+          Только с query и entity_type=bc. true — только домены BC, false —
+          только не-домены. Когда пользователь явно просит домены или
+          операционные BC.
+        default: 'false'
+        items:
+          type: ''
+      - name: limit
+        position: query
+        required: false
+        type: number
+        description: >-
+          Только с query. Сколько результатов вернуть (1–100, default 10).
+          Увеличь для широкого обзора, уменьши для top-N.
+        default: '10'
+        items:
+          type: int32
     requestBody: ''
     responseBody: '{{.Response.Body}}'
   - name: getParentsById_1
@@ -420,7 +487,7 @@ tools:
           type: ''
     requestBody: ''
     responseBody: '{{.Response.Body}}'
-  - name: getTechCapabilityHistoryVersion
+  - name: getTcHistoryVersion
     description: Возвращает сравнение указанной версии с другой (при наличии параметра).
     method: GET
     endpoint: >-
@@ -485,4 +552,4 @@ tools:
 prompts: []
 mcpServers: []
 createdAt: '2026-06-19T11:22:43.504063145Z'
-updatedAt: '2026-06-29T04:34:45.53578369Z'
+updatedAt: '2026-08-25T10:39:55.94681552Z'

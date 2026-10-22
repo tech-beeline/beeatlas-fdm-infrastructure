@@ -24,20 +24,23 @@ servers:
     description: >-
       ArchiMate Application Layer — каталог продуктов (fdm-products). Продукты и
       CMDB: карточки, alias, доступность, сотрудники, инфраструктура, влияния,
-      E2E-процессы. Архитектурная модель: контейнеры Structurizr, интерфейсы и
-      методы (Mapic/Structurizr), обнаруженные интерфейсы, поиск операций и
-      связей с техническими возможностями. Связи продукт—технология. Используй
-      для состава продукта и прикладной архитектуры — не для NFR, паттернов и
-      фитнес-функций.
+      E2E-процессы (каталог и runtime-валидация через staging-service).
+      Архитектурная модель: контейнеры Structurizr, интерфейсы и методы
+      (Mapic/Structurizr), обнаруженные интерфейсы, поиск операций и связей с
+      техническими возможностями. Use case (project-backend): каталог, карточки,
+      ветки, дерево вызовов. Группировка discovered-методов продукта по use
+      case. Связи продукт—технология. Используй для состава продукта и
+      прикладной архитектуры — не для NFR, паттернов и фитнес-функций.
     allowedTools:
       - getAllMnemonics
-      - getAllProductsAndTechRelations
+      - getProductsTechRelations
       - getAvailableProductsByCode
-      - getContainersFromStructurizr
+      - getContainersStructurizr
       - getContainersByCmdb
       - getE2eProcessByCmdb
       - getE2eList
       - getE2eByCode
+      - staging_validateE2e
       - getEmployeeByAlias
       - getFreeAlias
       - getInfluencesByCmdb
@@ -54,13 +57,17 @@ servers:
       - getProductsInfoByCode
       - getProductsWithTech
       - getProductsByTechId
-      - getImplementedTechCapabilitiesByProductId
       - getTcByContainerProduct
       - requestToMapic
       - searchInfra
-      - search_operationsByPathAndType
-      - search_operationsByTechCapabilityId
-      - search_operationsTreeByTechCapabilityId
+      - search_opsByPathAndType
+      - search_operationsByTcId
+      - search_operationsTreeByTcId
+      - getUseCaseOperations
+      - getAllLiveUseCases
+      - getUseCaseById
+      - getProjectUseCases
+      - getUseCasesByProduct
     config:
       url: http://gateway:8080
 tools:
@@ -76,7 +83,7 @@ tools:
       Content-Type: application/json
     requestBody: ''
     responseBody: '{{.Response.Body}}'
-  - name: getAllProductsAndTechRelations
+  - name: getProductsTechRelations
     description: Все продукты со связями на технологии Techradar
     method: GET
     endpoint: '{{.Config.url}}/product/api/v1/products/relations/tech'
@@ -103,7 +110,7 @@ tools:
           type: ''
     requestBody: ''
     responseBody: '{{.Response.Body}}'
-  - name: getContainersFromStructurizr
+  - name: getContainersStructurizr
     description: Просмотр контейнеров, их интерфейсов и методов в structurizr
     method: GET
     endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.cmdb}}/container'
@@ -178,8 +185,8 @@ tools:
     responseBody: '{{.Response.Body}}'
   - name: getE2eList
     description: >-
-      Список карточек e2e-процессов. filter: all (по умолчанию), without-bi-step,
-      with-bi-step.
+      Список карточек e2e-процессов. filter: all (по умолчанию),
+      without-bi-step, with-bi-step.
     method: GET
     endpoint: '{{.Config.url}}/product/api/v1/e2e'
     headers:
@@ -215,6 +222,29 @@ tools:
         items:
           type: ''
     requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: staging_validateE2e
+    description: >-
+      Валидация E2E PlantUML по тексту. Тело JSON с полем plantUml — содержимое
+      PlantUML. Ответ: отчёт валидации (valid, recognizedParticipants, unrecognizedParticipants,recognizedCalls, unrecognizedCalls, notices).
+    method: POST
+    endpoint: '{{.Config.url}}/staging-service/api/v1/e2e/validate'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: plantUml
+        position: body
+        required: true
+        type: string
+        description: Содержимое PlantUML
+        default: ''
+        items:
+          type: ''
+    requestBody: |-
+      {
+        "plantUml": {{ toJSON .Args.plantUml }}
+      }
     responseBody: '{{.Response.Body}}'
   - name: getEmployeeByAlias
     description: Получить сотрудника по алиасу
@@ -526,7 +556,7 @@ tools:
           type: int32
     requestBody: ''
     responseBody: '{{.Response.Body}}'
-  - name: getImplementedTechCapabilitiesByProductId
+  - name: getImplementedTcByProductId
     description: Список реализованных ТС (tech-capability) по продукту
     method: GET
     endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.id}}/tc-implementation'
@@ -617,7 +647,7 @@ tools:
           type: string
     requestBody: ''
     responseBody: '{{.Response.Body}}'
-  - name: search_operationsByPathAndType
+  - name: search_opsByPathAndType
     description: Поиск операций по пути и типу поиска
     method: GET
     endpoint: '{{.Config.url}}/product/api/v1/operation'
@@ -643,7 +673,7 @@ tools:
           type: ''
     requestBody: ''
     responseBody: '{{.Response.Body}}'
-  - name: search_operationsByTechCapabilityId
+  - name: search_operationsByTcId
     description: Поиск операций по id технической возможности (ТС)
     method: GET
     endpoint: '{{.Config.url}}/product/api/v1/operation/tech-capability/{{.Args.id}}'
@@ -661,7 +691,7 @@ tools:
           type: int64
     requestBody: ''
     responseBody: '{{.Response.Body}}'
-  - name: search_operationsTreeByTechCapabilityId
+  - name: search_operationsTreeByTcId
     description: Поиск дерева операций по id технической возможности (ТС)
     method: GET
     endpoint: '{{.Config.url}}/product/api/v1/operation/tech-capability/{{.Args.id}}/tree'
@@ -679,7 +709,130 @@ tools:
           type: int64
     requestBody: ''
     responseBody: '{{.Response.Body}}'
+  - name: getUseCaseOperations
+    description: >-
+      Дерево вызовов ветки use case. Query branch, по умолчанию main.
+      Система-участник — discoveredOperation.discoveredInterface.product (id,
+      alias, name), иначе productPlanned.
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/project/api/v1/project/{{.Args.projectId}}/use-case/{{.Args.useCaseId}}/operations
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: projectId
+        position: path
+        required: true
+        type: integer
+        description: Идентификатор проекта (целое положительное).
+        default: ''
+        items:
+          type: int64
+      - name: useCaseId
+        position: path
+        required: true
+        type: integer
+        description: Идентификатор use case (целое положительное).
+        default: ''
+        items:
+          type: int64
+      - name: branch
+        position: query
+        required: false
+        type: string
+        description: Ветка use case (query `branch`). По умолчанию main.
+        default: main
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getAllLiveUseCases
+    description: >-
+      Каталог живых use case: id, code, name, projectId, biStepCode. По нему
+      карточки продукта оставляют в одном проекте и берут код шага BI. Ветки и
+      шаги вызовов не возвращаются.
+    method: GET
+    endpoint: '{{.Config.url}}/project/api/v1/use-case'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getUseCaseById
+    description: >-
+      Карточка одного use case: projectId, biStepCode и список веток. Шаги
+      вызовов не возвращает.
+    method: GET
+    endpoint: '{{.Config.url}}/project/api/v1/use-case/{{.Args.useCaseId}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: useCaseId
+        position: path
+        required: true
+        type: integer
+        description: Идентификатор use case (целое положительное).
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getProjectUseCases
+    description: >-
+      Живые use case одного проекта: id, code, name, projectId. Кода шага BI
+      нет. Шаги us_operation_relation и ветки не возвращаются.
+    method: GET
+    endpoint: '{{.Config.url}}/project/api/v1/project/{{.Args.projectId}}/use-cases'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: projectId
+        position: path
+        required: true
+        type: integer
+        description: Идентификатор проекта (целое положительное).
+        default: ''
+        items:
+          type: int64
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getUseCasesByProduct
+    description: >-
+      Use case, в шагах которых участвуют discovered-методы системы. Передай
+      ровно один query-параметр: либо id, либо alias — не оба и не пустые. В
+      карточке id, name, code и operations. projectId и biStepCode не
+      возвращаются.
+    method: GET
+    endpoint: '{{.Config.url}}/product/api/v1/product/use-cases/grouped-by-use-case'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: query
+        required: false
+        type: string
+        description: >-
+          Id продукта. Передай только его ИЛИ только alias — не оба сразу.
+        default: ''
+        items:
+          type: ''
+      - name: alias
+        position: query
+        required: false
+        type: string
+        description: >-
+          Alias продукта без учёта регистра. Передай только его ИЛИ только id
+          — не оба сразу.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
 prompts: []
 mcpServers: []
 createdAt: '2026-06-26T06:20:30.767Z'
-updatedAt: '2026-07-31T14:19:00.000000000Z'
+updatedAt: '2026-09-04T09:29:42.899205598Z'

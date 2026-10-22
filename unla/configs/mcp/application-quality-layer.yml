@@ -28,29 +28,30 @@ servers:
       оценки качества, требований и паттернов — не для контейнеров, интерфейсов
       и каталога продуктов.
     allowedTools:
-      - getAllFitnessFunctions
+      - getFitnessFunctions
       - getAllNfr
       - getChapterPatterns
       - getChaptersWithNfr
-      - getFitnessFunctionsByProduct
-      - getFitnessFunctionsAggregation
+      - getFfAggregation
       - getNfrById
       - getNfrByPatternId
       - getProductsByRequirementId
-      - getRequirementVersionsByCoreId
+      - getReqVersionsByCoreId
       - getProductNfr
       - getProductPatterns
       - getSourceMetrics
       - getPatternIdsByProduct
+      - getProductFfResults
+      - runAllFfByWorkspace
     config:
       url: http://gateway:8080
 tools:
-  - name: getAllFitnessFunctions
+  - name: getFitnessFunctions
     description: >-
-      Полный справочник фитнес-функций (фф). Все записи фф из каталога с кодами,
-      статусами и ссылками на документацию.
+      Список записей справочника фитнес-функций: код, описание, применимость,
+      признак вспомогательной проверки и статус (TEST/TRIAL/ADOPT).
     method: GET
-    endpoint: '{{.Config.url}}/product/api/v1/ff'
+    endpoint: '{{.Config.url}}/ff/api/v1/fitness-functions'
     headers:
       Authorization: '{{.Request.Headers.Authorization}}'
       Content-Type: application/json
@@ -96,50 +97,91 @@ tools:
       Content-Type: application/json
     requestBody: ''
     responseBody: '{{.Response.Body}}'
-  - name: getFitnessFunctionsByProduct
-    description: Получить результаты фитнес-функций по продукту
+  - name: getProductFfResults
+    description: >-
+      Актуальные результаты фитнес-функций по продукту. Возвращает последние
+      проверки (без TEST): по умолчанию основные, при auxiliary=true —
+      вспомогательные. Учитывается ветка (по умолчанию main).
     method: GET
-    endpoint: '{{.Config.url}}/product/api/v1/product/{{.Args.alias}}/fitness-function'
+    endpoint: '{{.Config.url}}/ff/api/v1/product/{{.Args.code}}/actual-results'
     headers:
       Authorization: '{{.Request.Headers.Authorization}}'
       Content-Type: application/json
     args:
-      - name: alias
+      - name: code
         position: path
         required: true
         type: string
-        description: Alias продукта
+        description: Код (alias) продукта
         default: ''
         items:
-          type: ''
-      - name: source_id
+          type: string
+      - name: auxiliary
         position: query
         required: false
-        type: integer
-        description: ID источника оценки
+        type: boolean
+        description: >-
+          true — только вспомогательные проверки (auxiliary_check); иначе только
+          основные. TEST не включается.
         default: ''
         items:
-          type: ''
-      - name: source_type
+          type: boolean
+      - name: branch
         position: query
         required: false
         type: string
-        description: Тип источника оценки
+        description: 'Ветка результата (по умолчанию main)'
         default: ''
         items:
-          type: ''
+          type: string
     requestBody: ''
     responseBody: '{{.Response.Body}}'
-  - name: getFitnessFunctionsAggregation
+  - name: getFfAggregation
     description: >-
-      Агрегированные результаты фитнес-функций для дашборда (сводная статистика
-      по оценкам FF без детализации по отдельному продукту)
+      Сводка фитнес-функций для дашборда: список функций и дерево
+      домены → продукты с актуальными результатами проверок.
     method: GET
-    endpoint: '{{.Config.url}}/product/api/v1/dashboard/fitness-function'
+    endpoint: '{{.Config.url}}/ff/api/v1/dashboard/fitness-function'
     headers:
       Authorization: '{{.Request.Headers.Authorization}}'
       Content-Type: application/json
     requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: runAllFfByWorkspace
+    description: >-
+      «Сухой» прогон всех фитнес-функций по продукту на переданном
+      workspace.json (Structurizr): считает проверки TRIAL/ADOPT и возвращает
+      результаты без сохранения в БД. Асинхронные проверки пропускаются.
+    method: POST
+    endpoint: '{{.Config.url}}/ff/api/v1/run-all-workspace'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: app
+        position: query
+        required: true
+        type: string
+        description: Alias (мнемоника) продукта
+        default: ''
+        items:
+          type: string
+      - name: branch
+        position: query
+        required: false
+        type: string
+        description: 'Ветка (по умолчанию main)'
+        default: ''
+        items:
+          type: string
+      - name: workspace
+        position: body
+        required: true
+        type: object
+        description: JSON-документ workspace (Structurizr)
+        default: '{}'
+    requestBody: |-
+      {{ toJSON .Args.workspace }}
     responseBody: '{{.Response.Body}}'
   - name: getNfrById
     description: Получить NFR по id (конкретную версию)
@@ -205,7 +247,7 @@ tools:
           type: ''
     requestBody: ''
     responseBody: '{{.Response.Body}}'
-  - name: getRequirementVersionsByCoreId
+  - name: getReqVersionsByCoreId
     description: >-
       История версий требования NFR по core-id. Все версии, отсортированные по
       номеру версии по возрастанию.
@@ -346,4 +388,4 @@ tools:
 prompts: []
 mcpServers: []
 createdAt: '2026-06-19T11:22:06.62287676Z'
-updatedAt: '2026-07-31T14:29:00.000000000Z'
+updatedAt: '2026-07-31T14:49:33.856025308Z'

@@ -48,6 +48,7 @@ servers:
       - cx_getEditabilityDtoBI
       - cx_getCjAlerts
       - cx_getCjLinkedToE2e
+      - cx_getBiStepByCode
     config:
       url: http://gateway:8080
 tools:
@@ -146,12 +147,12 @@ tools:
     responseBody: '{{.Response.Body}}'
   - name: cx_listCJv2
     description: >-
-      Список кратких CJ (API v2). Фильтры: product-id, sample (ALL/PUBLIC/DRAFT),
-      search по имени. В ответе карточки CJ: id, name, productId, draft, tags,
-      dashboardLink, uniqueIdent, bpmn, даты — без шагов и BI.
+      Список кратких CJ (API v2). Фильтры: product-id, sample
+      (ALL/PUBLIC/DRAFT), search по имени. В ответе карточки CJ: id, name,
+      productId, draft, tags, dashboardLink, uniqueIdent, bpmn, даты — без шагов
+      и BI.
     method: GET
-    endpoint: >-
-      {{.Config.url}}/cx/api/cx/v2/product/cj?product-id={{.Args.product_id}}&sample={{.Args.sample}}&search={{.Args.search}}
+    endpoint: '{{.Config.url}}/cx/api/cx/v2/product/cj?product-id={{.Args.product_id}}'
     headers:
       Authorization: '{{.Request.Headers.Authorization}}'
       Content-Type: application/json
@@ -265,8 +266,7 @@ tools:
       карточки CJ: id, name, id_product, draft, author/owners (id), uniqueIdent,
       bpmn, даты — без шагов и BI.
     method: GET
-    endpoint: >-
-      {{.Config.url}}/cx/api/cx/v1/product/cj?idProduct={{.Args.idProduct}}&sample={{.Args.sample}}&search={{.Args.search}}
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/product/cj'
     headers:
       Authorization: '{{.Request.Headers.Authorization}}'
       Content-Type: application/json
@@ -320,8 +320,7 @@ tools:
       Поиск BI по фильтру Фильтрация по тексту, продукту, статусу и признаку
       черновика. Параметры можно комбинировать.
     method: GET
-    endpoint: >-
-      {{.Config.url}}/cx/api/cx/v1/library/business-interactions/find?text={{.Args.text}}&id_product={{.Args.id_product}}&id_status={{.Args.id_status}}&draft={{.Args.draft}}
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/library/business-interactions/find'
     headers:
       Authorization: '{{.Request.Headers.Authorization}}'
       Content-Type: application/json
@@ -404,7 +403,27 @@ tools:
       Content-Type: application/json
     requestBody: ''
     responseBody: '{{.Response.Body}}'
+  - name: cx_getBiStepByCode
+    description: >-
+      Контекст шага BI по коду uniqueIdent: сам шаг, родительский BI и список
+      CJ, в которых этот BI используется. У CJ в ответе нет тегов.
+    method: GET
+    endpoint: '{{.Config.url}}/cx/api/cx/v1/bi-step/{{.Args.code}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: code
+        position: path
+        required: true
+        type: string
+        description: Код шага BI (uniqueIdent / unique_ident).
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
 prompts: []
 mcpServers: []
 createdAt: '2026-06-19T11:22:43.504063145Z'
-updatedAt: '2026-07-31T14:42:00.000000000Z'
+updatedAt: '2026-08-10T10:45:15.26130231Z'

@@ -1,0 +1,555 @@
+name: FDM Business Capability Layer
+tenant: default
+routers:
+  - server: fdm-capability
+    prefix: /gateway/fdm/capability
+    cors:
+      allowOrigins:
+        - '*'
+      allowMethods:
+        - GET
+        - POST
+        - OPTIONS
+      allowHeaders:
+        - Content-Type
+        - Authorization
+        - Mcp-Session-Id
+        - mcp-protocol-version
+      exposeHeaders:
+        - Mcp-Session-Id
+        - mcp-protocol-version
+      allowCredentials: true
+servers:
+  - name: fdm-capability
+    description: >-
+      ArchiMate Business Layer — capability-backend. BusinessCapability (БС) и
+      TechCapability (ТС): каталоги, деревья, родители и дочерние элементы,
+      история версий, карты возможностей, поиск BC/TC, связи ТС с продуктами,
+      черновики публикации, справочник критериев оценки BC/TC. Используй для
+      модели бизнес- и технических возможностей — не для Customer Journey/BI
+      (отдельный MCP cx).
+    allowedTools:
+      - getCapabilityMapById
+      - getTechById
+      - getKidsByIdV2
+      - getKidsById
+      - geBcById
+      - getBcOrderById
+      - getBcHistory
+      - findTcByProductId
+      - getParentsById
+      - getBusinessCapabilities
+      - getBcTreeById
+      - getBcOrderDraft
+      - getTechCapabilities
+      - getAllKidsIdById
+      - getBcHistoryVersion
+      - getTechCapabilityHistory
+      - searchCapabilities
+      - getParentsById_1
+      - getTcHistoryVersion
+      - getBusinessCapabilityTree
+      - getCriteriaList
+    config:
+      url: http://gateway:8080
+tools:
+  - name: getCapabilityMapById
+    description: Возвращает карту возможностей по идентификатору (id).
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/maps/{{.Args.Id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: Id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор карты.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getTechById
+    description: Возвращает техническую возможность по её id.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/tech-capabilities/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор технической возможности.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getKidsByIdV2
+    description: Возвращает дочерние бизнес-возможности для указанной (версия API v2).
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/capability/api/v2/business-capability/{{.Args.id}}/children
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор бизнес-возможности.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getKidsById
+    description: Возвращает список дочерних бизнес-возможностей для указанной.
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/capability/api/v1/business-capability/{{.Args.id}}/children
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор бизнес-возможности.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: geBcById
+    description: Возвращает бизнес-возможность (BC) по её id.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/business-capability/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор бизнес-возможности.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getBcOrderById
+    description: Возвращает черновик/заказ публикации по id.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/business-capability/order/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор заказа/черновика.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getBcHistory
+    description: Возвращает историю версий бизнес-возможности.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/business-capability/history/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор бизнес-возможности.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: findTcByProductId
+    description: Возвращает технические возможности (ТС), реализованные в продукте.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/tech-capabilities/product/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: id продукта
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getParentsById
+    description: Возвращает цепочку родителей для указанной технической возможности.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/tech-capabilities/{{.Args.id}}/parents'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор технической возможности.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getBusinessCapabilities
+    description: Возвращает список бизнес-возможностей с учетом фильтров и пагинации.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/business-capability'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: limit
+        position: query
+        required: false
+        type: integer
+        description: Максимальное число записей в ответе.
+        default: ''
+        items:
+          type: ''
+      - name: findBy
+        position: query
+        required: false
+        type: string
+        description: 'Режим фильтрации (например: ALL).'
+        default: ALL
+        items:
+          type: ''
+      - name: offset
+        position: query
+        required: false
+        type: integer
+        description: Смещение для пагинации.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getBcTreeById
+    description: Возвращает дерево, построенное от указанной бизнес-возможности.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/business-capability/tree/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: integer
+        description: Идентификатор бизнес-возможности (корень дерева).
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getBcOrderDraft
+    description: Возвращает текущие черновики публикации каталога.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/business-capability/order/draft'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getTechCapabilities
+    description: Возвращает список технических возможностей с пагинацией.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/tech-capabilities'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: limit
+        position: query
+        required: false
+        type: integer
+        description: Максимальное число записей в ответе.
+        default: ''
+        items:
+          type: ''
+      - name: offset
+        position: query
+        required: false
+        type: integer
+        description: Смещение для пагинации.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getAllKidsIdById
+    description: Возвращает id всех дочерних бизнес-возможностей (включая вложенные).
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/capability/api/v1/business-capability/{{.Args.id}}/children/all
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор бизнес-возможности.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getBcHistoryVersion
+    description: Возвращает сравнение указанной версии с другой (при наличии параметра).
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/capability/api/v1/business-capability/history/compare/{{.Args.id}}/{{.Args.version}}
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор бизнес-возможности.
+        default: ''
+        items:
+          type: ''
+      - name: version
+        position: path
+        required: true
+        type: number
+        description: Номер версии для сравнения.
+        default: ''
+        items:
+          type: ''
+      - name: other_version
+        position: query
+        required: false
+        type: number
+        description: 'Опционально: вторая версия для сравнения.'
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getTechCapabilityHistory
+    description: Возвращает историю версий технической возможности.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/tech-capabilities/history/{{.Args.id}}'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор технической возможности.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: searchCapabilities
+    description: >-
+      Поиск TC (технические возможности) и BC (бизнес-возможности) в fdm-search.
+      Два режима — выбери один. (1) Код известен: только code, например TC-12345
+      или BC-018021; опционально entity_type=tc или bc. (2) Поиск по смыслу:
+      query на естественном языке («оплата услуг», «блокировка SIM») + фильтры
+      по задаче (см. описания параметров). Ответ: found, results[] с payload
+      (code, name, description, entity_type, score).
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/search/api/v1/search?query={{.Args.query}}&code={{.Args.code}}&entity_type={{.Args.entity_type}}&exclude_systems={{.Args.exclude_systems}}&parent={{.Args.parent}}&is_domain={{.Args.is_domain}}&limit={{.Args.limit}}&llm_rerank={{.Args.llm_rerank}}
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: query
+        position: query
+        required: false
+        type: string
+        description: >-
+          Семантический поиск по смыслу, когда кода нет. Формулировка задачи или
+          домена своими словами. Пример: «управление тарифами», «блокировка
+          абонента». Не передавай вместе с code.
+        default: ''
+        items:
+          type: ''
+      - name: code
+        position: query
+        required: false
+        type: string
+        description: >-
+          Точный поиск, когда код уже известен. Пример: TC-12345, BC-018021.
+          Передавай только code; query, parent, exclude_systems, is_domain,
+          llm_rerank не нужны.
+        default: ''
+        items:
+          type: ''
+      - name: entity_type
+        position: query
+        required: false
+        type: string
+        description: >-
+          Кого искать: tc — только технические, bc — только бизнес, tc,bc — оба
+          (default). С query: bc для бизнес-процессов, tc для IT/систем. С code:
+          уточни тип, если известен.
+        default: tc,bc
+        items:
+          type: ''
+      - name: exclude_systems
+        position: query
+        required: false
+        type: string
+        description: >-
+          Только с query и entity_type=tc. Исключить системы из результатов —
+          alias или name через запятую. Пример: LegacyCRM,BillingOld. Когда
+          пользователь просит не учитывать системы.
+        default: ''
+        items:
+          type: ''
+      - name: parent
+        position: query
+        required: false
+        type: string
+        description: >-
+          Только с query. Сузить поиск до ветки каталога BC — коды родителей
+          через запятую (OR). Пример: BC-018021,CATALOG_BC. Когда нужны TC/BC
+          только внутри известной бизнес-области.
+        default: ''
+        items:
+          type: ''
+      - name: is_domain
+        position: query
+        required: false
+        type: boolean
+        description: >-
+          Только с query и entity_type=bc. true — только домены BC, false —
+          только не-домены. Когда пользователь явно просит домены или
+          операционные BC.
+        default: 'false'
+        items:
+          type: ''
+      - name: limit
+        position: query
+        required: false
+        type: number
+        description: >-
+          Только с query. Сколько результатов вернуть (1–100, default 10).
+          Увеличь для широкого обзора, уменьши для top-N.
+        default: '10'
+        items:
+          type: int32
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getParentsById_1
+    description: Возвращает цепочку родителей для указанной бизнес-возможности.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/business-capability/{{.Args.id}}/parents'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор бизнес-возможности.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getTcHistoryVersion
+    description: Возвращает сравнение указанной версии с другой (при наличии параметра).
+    method: GET
+    endpoint: >-
+      {{.Config.url}}/capability/api/v1/tech-capabilities/history/compare/{{.Args.id}}/{{.Args.version}}
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: id
+        position: path
+        required: true
+        type: number
+        description: Идентификатор технической возможности.
+        default: ''
+        items:
+          type: ''
+      - name: version
+        position: path
+        required: true
+        type: number
+        description: Номер версии для сравнения.
+        default: ''
+        items:
+          type: ''
+      - name: other_version
+        position: query
+        required: false
+        type: number
+        description: 'Опционально: вторая версия для сравнения.'
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getBusinessCapabilityTree
+    description: Возвращает дерево бизнес-возможностей.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/business-capability/tree'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+  - name: getCriteriaList
+    description: Возвращает список критериев с учетом опционального фильтра.
+    method: GET
+    endpoint: '{{.Config.url}}/capability/api/v1/criterias'
+    headers:
+      Authorization: '{{.Request.Headers.Authorization}}'
+      Content-Type: application/json
+    args:
+      - name: filter
+        position: query
+        required: false
+        type: string
+        description: Опциональный фильтр для списка критериев.
+        default: ''
+        items:
+          type: ''
+    requestBody: ''
+    responseBody: '{{.Response.Body}}'
+prompts: []
+mcpServers: []
+createdAt: '2026-06-19T11:22:43.504063145Z'
+updatedAt: '2026-08-25T10:39:55.94681552Z'
